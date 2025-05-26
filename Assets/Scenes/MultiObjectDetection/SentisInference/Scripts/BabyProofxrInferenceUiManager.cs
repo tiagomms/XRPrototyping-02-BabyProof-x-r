@@ -30,7 +30,10 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         [SerializeField] private Color m_chockingBoxColor;
         [SerializeField] private Color m_chockingFontColor;
         
-
+        [Header("Test in play mode")]
+        [SerializeField] protected TestImageManager m_testImageManager;
+        [SerializeField] protected Camera m_debugCamera;
+        
         private string[] m_dangerousLabels;
         private Dictionary<int, string> m_dangerousLabelAssetDict;
 
@@ -47,6 +50,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         public override void OnObjectDetectionError()
         {
             base.OnObjectDetectionError();
+            hazardPrefabManager.UpdateHazards(new ());
         }
         #endregion
 
@@ -91,15 +95,22 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             var boxesFound = output.shape[0];
             if (boxesFound <= 0)
             {
+                hazardPrefabManager.UpdateHazards(new ());
                 OnObjectsDetected?.Invoke(0);
                 return;
             }
             var maxBoxes = Mathf.Min(boxesFound, 200);
 
+#if !UNITY_EDITOR
+
             //Get the camera intrinsics
             var intrinsics = PassthroughCameraUtils.GetCameraIntrinsics(CameraEye);
             var camRes = intrinsics.Resolution;
-
+            XRDebugLogViewer.Log($"Camera Resolution {camRes}");
+#else
+            // TODO: hardcoded, in the future, get image original resolution
+            var camRes = new Vector2Int(1280, 960); 
+#endif 
             int boxesDetected = 0;
             List<BabyProofBoundingBox> tempBoundingBoxes = new();
 
@@ -204,7 +215,55 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         {
             // Get the 3D marker world position using Depth Raycast
             var centerPixel = new Vector2Int(Mathf.RoundToInt(perX * camRes.x), Mathf.RoundToInt((1.0f - perY) * camRes.y));
+#if !UNITY_EDITOR
             var ray = PassthroughCameraUtils.ScreenPointToRayInWorld(CameraEye, centerPixel);
+#else
+            if (m_testImageManager == null)
+            {
+                Debug.LogWarning("TestImageManager reference is missing. Cannot calculate world position in Editor mode.");
+                return null;
+            }
+
+            // Get the raw image's transform
+            var rawImageTransform = m_testImageManager.transform;
+            var rawImagePosition = rawImageTransform.position;
+            var rawImageRotation = rawImageTransform.rotation;
+
+            // Get the raw image's dimensions in world space
+            var rawImageRect = m_testImageManager.RawImageToDisplay.GetComponent<RectTransform>();
+            if (rawImageRect == null)
+            {
+                Debug.LogWarning("Raw image RectTransform is missing. Cannot calculate world position in Editor mode.");
+                return null;
+            }
+
+            // Calculate the world space dimensions of the raw image
+            var imageWidth = rawImageRect.rect.width * rawImageRect.lossyScale.x;
+            var imageHeight = rawImageRect.rect.height * rawImageRect.lossyScale.y;
+
+            // Calculate the offset from the center of the image based on percentages
+            // perX: 0 = left edge, 1 = right edge
+            // perY: 0 = bottom edge, 1 = top edge
+            //var xOffset = perX * imageWidth;
+            //var yOffset = (0.5f - perY)* imageHeight; // Invert Y to match Unity's coordinate system
+            var xOffset = (perX - 0.5f) * imageWidth;
+            var yOffset = (perY - 0.5f) * imageHeight; // Invert Y to match Unity's coordinate system
+
+            // Calculate the world position by offsetting from the raw image's center
+            var worldPosition = rawImagePosition + 
+                              rawImageRotation * new Vector3(xOffset, yOffset, 0);
+
+
+            Debug.Log($"[CalculateWorldPosition] UNITY_EDITOR {(worldPosition - m_debugCamera.transform.position)}; perX: {perX}; perY: {perY}; width {imageWidth}; height: {imageHeight}; Offsets x {xOffset}; y {yOffset}");
+            // Create a ray from the camera to this point
+            if (m_debugCamera == null)
+            {
+                Debug.LogWarning("Main camera not found. Cannot calculate world position in Editor mode.");
+                return null;
+            }
+
+            var ray = new Ray(m_debugCamera.transform.position, (worldPosition - m_debugCamera.transform.position).normalized);
+#endif
             var worldPos = m_environmentRaycast.PlaceGameObjectByScreenPos(ray);
             return worldPos;
         }

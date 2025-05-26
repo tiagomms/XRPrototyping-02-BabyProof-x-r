@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using Meta.XR.Samples;
 using UnityEngine;
-#if UNITY_ANDROID
-using UnityEngine.Android;
 using PCD = PassthroughCameraSamples.PassthroughCameraDebugger;
 
+#if UNITY_ANDROID
+using UnityEngine.Android;
 #endif
 
 namespace PassthroughCameraSamples
@@ -30,12 +30,17 @@ namespace PassthroughCameraSamples
         public static bool? HasCameraPermission { get; private set; }
         private static bool s_askedOnce;
 
-#if UNITY_ANDROID
         /// <summary>
         /// Request camera permission if the permission is not authorized by the user.
         /// </summary>
         public void AskCameraPermissions()
         {
+#if UNITY_EDITOR
+            // In editor mode, we don't need to request permissions
+            HasCameraPermission = true;
+            PCD.DebugMessage(LogType.Log, "PCA: Running in Unity Editor - camera permissions granted automatically");
+            return;
+#elif UNITY_ANDROID
             if (s_askedOnce)
             {
                 return;
@@ -59,8 +64,10 @@ namespace PassthroughCameraSamples
                 var allPermissions = CameraPermissions.Concat(PermissionRequestsOnStartup).ToArray();
                 Permission.RequestUserPermissions(allPermissions, callbacks);
             }
+#endif
         }
 
+#if UNITY_ANDROID
         /// <summary>
         /// Permission Granted callback
         /// </summary>
