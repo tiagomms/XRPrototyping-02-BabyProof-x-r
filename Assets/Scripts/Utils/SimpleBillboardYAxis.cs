@@ -22,31 +22,19 @@ using UnityEngine;
 
 namespace Utils
 {
-    public class SimpleBillboard : MonoBehaviour
+    public class SimpleBillboardYAxis : SimpleBillboard
     {
-        [Header("Rotation Settings")]
-        [SerializeField, Range(0f, 1f)] protected float rotationSpeed = 0.1f;
-
-        protected Camera _mainCamera;
-        protected Quaternion _targetRotation;
-
-        protected virtual void Start()
-        {
-            _mainCamera = Camera.main;
-            _targetRotation = transform.rotation;
-        }
-
-        protected virtual void Update()
+        protected override void Update()
         {
             var direction = transform.position - _mainCamera.transform.position;
-            LookTowards(direction);
-        }
+            // Flatten the direction vector so it only rotates around Y
+            direction.y = 0f;
 
-        protected void LookTowards(Vector3 direction)
-        {
-            _targetRotation = Quaternion.LookRotation(direction);
+            // If the direction is too small, don't rotate (avoids errors)
+            if (direction.sqrMagnitude < 0.001f)
+                return;
 
-            transform.rotation = Quaternion.Slerp(transform.rotation, _targetRotation, rotationSpeed);
+            LookTowards(direction.normalized);
         }
     }
 }

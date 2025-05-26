@@ -13,28 +13,29 @@ namespace PassthroughCameraSamples.MultiObjectDetection
     public class SentisInferenceUiManager : MonoBehaviour
     {
         [Header("Placement configureation")]
-        [SerializeField] private EnvironmentRayCastSampleManager m_environmentRaycast;
-        [SerializeField] private WebCamTextureManager m_webCamTextureManager;
-        private PassthroughCameraEye CameraEye => m_webCamTextureManager.Eye;
+        [SerializeField] protected EnvironmentRayCastSampleManager m_environmentRaycast;
+        [SerializeField] protected WebCamTextureManager m_webCamTextureManager;
+        protected PassthroughCameraEye CameraEye => m_webCamTextureManager.Eye;
 
         [Header("UI display references")]
-        [SerializeField] private SentisObjectDetectedUiManager m_detectionCanvas;
-        [SerializeField] private RawImage m_displayImage;
-        [SerializeField] private Sprite m_boxTexture;
+        [SerializeField] protected SentisObjectDetectedUiManager m_detectionCanvas;
+        [SerializeField] protected RawImage m_displayImage;
+        [SerializeField] protected Sprite m_boxTexture;
+        [SerializeField] protected Font m_font;
+        [SerializeField] protected int m_fontSize = 80;
+
         [SerializeField] private Color m_boxColor;
-        [SerializeField] private Font m_font;
         [SerializeField] private Color m_fontColor;
-        [SerializeField] private int m_fontSize = 80;
         [Space(10)]
         public UnityEvent<int> OnObjectsDetected;
 
         public List<BoundingBox> BoxDrawn = new();
 
-        private string[] m_labels;
-        private List<GameObject> m_boxPool = new();
-        private Transform m_displayLocation;
+        protected string[] m_labels;
+        protected List<GameObject> m_boxPool = new();
+        protected Transform m_displayLocation;
 
-        //bounding box data
+        //base bounding box implementation
         public struct BoundingBox
         {
             public float CenterX;
@@ -47,14 +48,14 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         }
 
         #region Unity Functions
-        private void Start()
+        protected virtual void Start()
         {
             m_displayLocation = m_displayImage.transform;
         }
         #endregion
 
         #region Detection Functions
-        public void OnObjectDetectionError()
+        public virtual void OnObjectDetectionError()
         {
             // Clear current boxes
             ClearAnnotations();
@@ -65,7 +66,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         #endregion
 
         #region BoundingBoxes functions
-        public void SetLabels(TextAsset labelsAsset)
+        public virtual void SetLabels(TextAsset labelsAsset)
         {
             //Parse neural net m_labels
             m_labels = labelsAsset.text.Split('\n');
@@ -77,7 +78,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             m_detectionCanvas.CapturePosition();
         }
 
-        public void DrawUIBoxes(Tensor<float> output, Tensor<int> labelIDs, float imageWidth, float imageHeight)
+        public virtual void DrawUIBoxes(Tensor<float> output, Tensor<int> labelIDs, float imageWidth, float imageHeight)
         {
             // Updte canvas position
             m_detectionCanvas.UpdatePosition();
@@ -141,11 +142,11 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                 BoxDrawn.Add(box);
 
                 // Draw 2D box
-                DrawBox(box, n);
+                DrawBox(box, n, m_boxColor, m_fontColor);
             }
         }
 
-        private void ClearAnnotations()
+        protected virtual void ClearAnnotations()
         {
             foreach (var box in m_boxPool)
             {
@@ -154,16 +155,17 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             BoxDrawn.Clear();
         }
 
-        private void DrawBox(BoundingBox box, int id)
+        // NOTE: since there is a clear every redraw (there is no need to remake panels)
+        protected virtual void DrawBox(BoundingBox box, int index, Color color, Color fontColor)
         {
             //Create the bounding box graphic or get from pool
             GameObject panel;
-            if (id < m_boxPool.Count)
+            if (index < m_boxPool.Count)
             {
-                panel = m_boxPool[id];
+                panel = m_boxPool[index];
                 if (panel == null)
                 {
-                    panel = CreateNewBox(m_boxColor);
+                    panel = CreateNewBox(color, fontColor);
                 }
                 else
                 {
@@ -172,7 +174,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             }
             else
             {
-                panel = CreateNewBox(m_boxColor);
+                panel = CreateNewBox(color, fontColor);
             }
             //Set box position
             panel.transform.localPosition = new Vector3(box.CenterX, -box.CenterY, box.WorldPos.HasValue ? box.WorldPos.Value.z : 0.0f);
@@ -187,7 +189,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             label.fontSize = 12;
         }
 
-        private GameObject CreateNewBox(Color color)
+        protected virtual GameObject CreateNewBox(Color color, Color fontColor)
         {
             //Create the box and set image
             var panel = new GameObject("ObjectBox");
@@ -205,7 +207,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             text.transform.SetParent(panel.transform, false);
             var txt = text.AddComponent<Text>();
             txt.font = m_font;
-            txt.color = m_fontColor;
+            txt.color = fontColor;
             txt.fontSize = m_fontSize;
             txt.horizontalOverflow = HorizontalWrapMode.Overflow;
 

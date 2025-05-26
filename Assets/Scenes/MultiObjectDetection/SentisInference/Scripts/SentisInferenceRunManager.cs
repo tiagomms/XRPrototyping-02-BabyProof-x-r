@@ -12,36 +12,36 @@ namespace PassthroughCameraSamples.MultiObjectDetection
     public class SentisInferenceRunManager : MonoBehaviour
     {
         [Header("Sentis Model config")]
-        [SerializeField] private Vector2Int m_inputSize = new(640, 640);
-        [SerializeField] private BackendType m_backend = BackendType.CPU;
-        [SerializeField] private ModelAsset m_sentisModel;
-        [SerializeField] private int m_layersPerFrame = 25;
-        [SerializeField] private TextAsset m_labelsAsset;
-        public bool IsModelLoaded { get; private set; } = false;
+        [SerializeField] protected Vector2Int m_inputSize = new(640, 640);
+        [SerializeField] protected BackendType m_backend = BackendType.CPU;
+        [SerializeField] protected ModelAsset m_sentisModel;
+        [SerializeField] protected int m_layersPerFrame = 25;
+        [SerializeField] protected TextAsset m_labelsAsset;
+        public bool IsModelLoaded { get; protected set; } = false;
 
         [Header("UI display references")]
         [SerializeField] private SentisInferenceUiManager m_uiInference;
 
         [Header("[Editor Only] Convert to Sentis")]
         public ModelAsset OnnxModel;
-        [SerializeField, Range(0, 1)] private float m_iouThreshold = 0.6f;
-        [SerializeField, Range(0, 1)] private float m_scoreThreshold = 0.23f;
+        [SerializeField, Range(0, 1)] protected float m_iouThreshold = 0.6f;
+        [SerializeField, Range(0, 1)] protected float m_scoreThreshold = 0.23f;
         [Space(40)]
 
-        private Worker m_engine;
-        private IEnumerator m_schedule;
-        private bool m_started = false;
-        private Tensor<float> m_input;
-        private Model m_model;
-        private int m_download_state = 0;
-        private Tensor<float> m_output;
-        private Tensor<int> m_labelIDs;
-        private Tensor<float> m_pullOutput;
-        private Tensor<int> m_pullLabelIDs;
-        private bool m_isWaiting = false;
+        protected Worker m_engine;
+        protected IEnumerator m_schedule;
+        protected bool m_started = false;
+        protected Tensor<float> m_input;
+        protected Model m_model;
+        protected int m_download_state = 0;
+        protected Tensor<float> m_output;
+        protected Tensor<int> m_labelIDs;
+        protected Tensor<float> m_pullOutput;
+        protected Tensor<int> m_pullLabelIDs;
+        protected bool m_isWaiting = false;
 
         #region Unity Functions
-        private IEnumerator Start()
+        protected virtual IEnumerator Start()
         {
             // Wait for the UI to be ready because when Sentis load the model it will block the main thread.
             yield return new WaitForSeconds(0.05f);
@@ -50,12 +50,12 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             LoadModel();
         }
 
-        private void Update()
+        protected virtual void Update()
         {
             InferenceUpdate();
         }
 
-        private void OnDestroy()
+        protected virtual void OnDestroy()
         {
             if (m_schedule != null)
             {
@@ -96,7 +96,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         #endregion
 
         #region Inference Functions
-        private void LoadModel()
+        protected virtual void LoadModel()
         {
             //Load model
             var model = ModelLoader.Load(m_sentisModel);
@@ -109,7 +109,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             IsModelLoaded = true;
         }
 
-        private void InferenceUpdate()
+        protected virtual void InferenceUpdate()
         {
             // Run the inference layer by layer to not block the main thread.
             if (m_started)
@@ -139,7 +139,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             }
         }
 
-        private void PollRequestOuput()
+        protected virtual void PollRequestOuput()
         {
             // Get the output 0 (coordinates data) from the model output using Sentis pull request.
             m_pullOutput = m_engine.PeekOutput(0) as Tensor<float>;
@@ -155,7 +155,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             }
         }
 
-        private void PollRequestLabelIDs()
+        protected virtual void PollRequestLabelIDs()
         {
             // Get the output 1 (labels ID data) from the model output using Sentis pull request.
             m_pullLabelIDs = m_engine.PeekOutput(1) as Tensor<int>;
@@ -171,7 +171,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             }
         }
 
-        private void GetInferencesResults()
+        protected virtual void GetInferencesResults()
         {
             // Get the different outputs in diferent frames to not block the main thread.
             switch (m_download_state)

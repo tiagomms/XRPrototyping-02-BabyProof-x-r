@@ -6,8 +6,8 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/MultiObjectDetection/MultiObjectDetection.unity
-    guid: 20c230cce46443841b5727b1d6100bfc
+    path: Assets/Scenes/Babyproofxr.unity
+    guid: f5d1e3403348d4f4fa70c3bf991019ca
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: a5b2c48b0392fd0489dbfc3a278e929d, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
