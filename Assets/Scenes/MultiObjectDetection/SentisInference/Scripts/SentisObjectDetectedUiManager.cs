@@ -16,12 +16,22 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         private Vector2Int CameraResolution => m_webCamTextureManager.RequestedResolution;
         [SerializeField] private GameObject m_detectionCanvas;
         [SerializeField] private float m_canvasDistance = 1f;
+
+        [Header("Test in play mode")]
+        [SerializeField] protected TestImageManager m_testImageManager;
+        [SerializeField] protected Camera m_debugCamera;
+
         private Pose m_captureCameraPose;
         private Vector3 m_capturePosition;
         private Quaternion m_captureRotation;
 
         private IEnumerator Start()
         {
+#if UNITY_EDITOR
+            // In editor, we don't need to wait for camera permissions
+            yield break;
+#endif
+
             if (m_webCamTextureManager == null)
             {
                 Debug.LogError($"PCA: {nameof(m_webCamTextureManager)} field is required "
@@ -60,6 +70,15 @@ namespace PassthroughCameraSamples.MultiObjectDetection
 
         public void CapturePosition()
         {
+#if UNITY_EDITOR
+            // In editor, use a default position
+            m_capturePosition = m_testImageManager.transform.position - m_debugCamera.transform.forward * 0.02f;
+            m_captureRotation = m_testImageManager.transform.rotation;
+            //Vector3 direction = m_testImageManager.transform.position - m_debugCamera.transform.position;
+            //m_captureRotation = Quaternion.LookRotation(direction);//Quaternion.Euler(0, m_testImageManager.transform.rotation.y, 0);
+            return;
+#endif
+
             // Capture the camera pose and position the canvas in front of the camera
             m_captureCameraPose = PassthroughCameraUtils.GetCameraPoseInWorld(CameraEye);
             m_capturePosition = m_captureCameraPose.position + m_captureCameraPose.rotation * Vector3.forward * m_canvasDistance;
@@ -68,8 +87,10 @@ namespace PassthroughCameraSamples.MultiObjectDetection
 
         public Vector3 GetCapturedCameraPosition()
         {
+#if UNITY_EDITOR
+            return m_testImageManager.transform.position;
+#endif
             return m_captureCameraPose.position;
         }
-
     }
 }

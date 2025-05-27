@@ -86,6 +86,8 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                 m_schedule = m_engine.ScheduleIterable(m_input);
                 m_download_state = 0;
                 m_started = true;
+
+                Debug.Log($"Sentis - [RunInference]: targetTexture {targetTexture.ToString()}");
             }
         }
 
@@ -125,6 +127,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                                 return;
                         }
                         m_download_state = 1;
+                        Debug.Log($"Sentis - [InferenceUpdate] download state 1");
                     }
                     else
                     {
@@ -134,7 +137,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                 }
                 catch (Exception e)
                 {
-                    Debug.LogError($"Sentis error: {e.Message}");
+                    XRDebugLogViewer.LogError($"Sentis error: {e.Message}");
                 }
             }
         }
@@ -142,6 +145,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         protected virtual void PollRequestOuput()
         {
             // Get the output 0 (coordinates data) from the model output using Sentis pull request.
+            Debug.Log($"Sentis - [PollRequestOuput]");
             m_pullOutput = m_engine.PeekOutput(0) as Tensor<float>;
             if (m_pullOutput.dataOnBackend != null)
             {
@@ -150,7 +154,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             }
             else
             {
-                Debug.LogError("Sentis: No data output m_output");
+                XRDebugLogViewer.LogError("Sentis: No data output m_output");
                 m_download_state = 4;
             }
         }
@@ -158,6 +162,8 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         protected virtual void PollRequestLabelIDs()
         {
             // Get the output 1 (labels ID data) from the model output using Sentis pull request.
+            Debug.Log($"Sentis - [PollRequestLabelIDs]");
+
             m_pullLabelIDs = m_engine.PeekOutput(1) as Tensor<int>;
             if (m_pullLabelIDs.dataOnBackend != null)
             {
@@ -166,7 +172,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             }
             else
             {
-                Debug.LogError("Sentis: No data output m_labelIDs");
+                XRDebugLogViewer.LogError("Sentis: No data output m_labelIDs");
                 m_download_state = 4;
             }
         }
@@ -195,7 +201,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                             }
                             else
                             {
-                                Debug.LogError("Sentis: m_output empty");
+                                XRDebugLogViewer.LogError("Sentis: m_output empty");
                                 m_download_state = 4;
                             }
                         }
@@ -220,7 +226,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                             }
                             else
                             {
-                                Debug.LogError("Sentis: m_labelIDs empty");
+                                XRDebugLogViewer.LogError("Sentis: m_labelIDs empty");
                                 m_download_state = 4;
                             }
                         }

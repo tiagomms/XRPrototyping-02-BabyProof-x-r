@@ -4,6 +4,7 @@ using System.Collections;
 using Meta.XR.Samples;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 namespace PassthroughCameraSamples.MultiObjectDetection
@@ -12,7 +13,8 @@ namespace PassthroughCameraSamples.MultiObjectDetection
     public class DetectionUiMenuManager : MonoBehaviour
     {
         [Header("Ui buttons")]
-        [SerializeField] private OVRInput.RawButton m_actionButton = OVRInput.RawButton.A;
+        [SerializeField] private InputActionReference m_actionButton;
+        //[SerializeField] private OVRInput.RawButton m_actionButton = OVRInput.RawButton.A;
 
         [Header("Ui elements ref.")]
         [SerializeField] private GameObject m_loadingPanel;
@@ -99,7 +101,8 @@ namespace PassthroughCameraSamples.MultiObjectDetection
 
         private void InitialMenuUpdate()
         {
-            if (OVRInput.GetUp(m_actionButton) || Input.GetKey(KeyCode.Return))
+            //if (OVRInput.GetUp(m_actionButton) || Input.GetKey(KeyCode.Return))
+            if (m_actionButton.action.WasPressedThisFrame())
             {
                 m_buttonSound?.Play();
                 OnPauseMenu(false);

@@ -27,6 +27,11 @@ namespace PassthroughCameraSamples
 
         private void Awake()
         {
+#if UNITY_EDITOR
+            Debug.Log("WebCamTextureManager: Running in Unity Editor - camera functionality will be limited");
+            return;
+#endif
+
             PCD.DebugMessage(LogType.Log, $"{nameof(WebCamTextureManager)}.{nameof(Awake)}() was called");
             Assert.AreEqual(1, FindObjectsByType<WebCamTextureManager>(FindObjectsInactive.Include, FindObjectsSortMode.None).Length,
                 $"PCA: Passthrough Camera: more than one {nameof(WebCamTextureManager)} component. Only one instance is allowed at a time. Current instance: {name}");
@@ -37,6 +42,11 @@ namespace PassthroughCameraSamples
 
         private void OnEnable()
         {
+#if UNITY_EDITOR
+            Debug.Log("WebCamTextureManager: Running in Unity Editor - camera functionality will be limited");
+            return;
+#endif
+
             PCD.DebugMessage(LogType.Log, $"PCA: {nameof(OnEnable)}() was called");
             if (!PassthroughCameraUtils.IsSupported)
             {
@@ -60,6 +70,10 @@ namespace PassthroughCameraSamples
 
         private void OnDisable()
         {
+#if UNITY_EDITOR
+            return;
+#endif
+
             PCD.DebugMessage(LogType.Log, $"PCA: {nameof(OnDisable)}() was called");
             StopCoroutine(InitializeWebCamTexture());
             if (WebCamTexture != null)
@@ -72,6 +86,10 @@ namespace PassthroughCameraSamples
 
         private void Update()
         {
+#if UNITY_EDITOR
+            return;
+#endif
+
             if (!m_hasPermission)
             {
                 if (PassthroughCameraPermissions.HasCameraPermission != true)
@@ -84,6 +102,10 @@ namespace PassthroughCameraSamples
 
         private IEnumerator InitializeWebCamTexture()
         {
+#if UNITY_EDITOR
+            yield break;
+#endif
+
             // Check if Passhtrough is present in the scene and is enabled
             var ptLayer = FindAnyObjectByType<OVRPassthroughLayer>();
             if (ptLayer == null || !PassthroughCameraUtils.IsPassthroughEnabled())

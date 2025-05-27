@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Meta.XR.Samples;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.InputSystem;
 
 namespace PassthroughCameraSamples.MultiObjectDetection
 {
@@ -14,7 +15,9 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         [SerializeField] private WebCamTextureManager m_webCamTextureManager;
 
         [Header("Controls configuration")]
-        [SerializeField] private OVRInput.RawButton m_actionButton = OVRInput.RawButton.A;
+
+        [SerializeField] private InputActionReference m_actionButton;
+        //[SerializeField] private OVRInput.RawButton m_actionButton = OVRInput.RawButton.A;
 
         [Header("Ui references")]
         [SerializeField] private DetectionUiMenuManager m_uiMenuManager;
@@ -28,6 +31,9 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         [Header("Sentis inference ref")]
         [SerializeField] private SentisInferenceRunManager m_runInference;
         [SerializeField] private SentisInferenceUiManager m_uiInference;
+
+        [Header("Editor Testing")]
+        [SerializeField] private TestImageManager m_testImageManager;
         [Space(10)]
         public UnityEvent<int> OnObjectsIdentified;
 
@@ -49,17 +55,42 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                 yield return null;
             }
             m_isSentisReady = true;
+
+            // setup test manager only in unity_editor
+            if (m_testImageManager != null)
+            {
+#if UNITY_EDITOR
+                m_testImageManager.gameObject.SetActive(true);
+#else
+                m_testImageManager.gameObject.SetActive(false);
+#endif
+            }
         }
 
         private void Update()
         {
-            // Get the WebCamTexture CPU image
-            var hasWebCamTextureData = m_webCamTextureManager.WebCamTexture != null;
+            // Get the appropriate texture source based on platform
+            Texture currentTexture = null;
+            bool hasValidTexture = false;
+
+#if UNITY_EDITOR
+            if (m_testImageManager != null && m_testImageManager.CurrentTexture != null)
+            {
+                currentTexture = m_testImageManager.CurrentTexture;
+                hasValidTexture = true;
+            }
+#else
+            hasValidTexture = m_webCamTextureManager.WebCamTexture != null;
+            if (hasValidTexture)
+            {
+                currentTexture = m_webCamTextureManager.WebCamTexture;
+            }
+#endif
 
             if (!m_isStarted)
             {
                 // Manage the Initial Ui Menu
-                if (hasWebCamTextureData && m_isSentisReady)
+                if (hasValidTexture && m_isSentisReady)
                 {
                     m_uiMenuManager.OnInitialMenu(m_environmentRaycast.HasScenePermission());
                     m_isStarted = true;
@@ -68,7 +99,9 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             else
             {
                 // Press A button to spawn 3d markers
-                if (OVRInput.GetUp(m_actionButton) && m_delayPauseBackTime <= 0)
+                //Debug.Log($"[Detection Manager] - pressed: {m_actionButton.action.IsPressed()}");
+                if (m_actionButton.action.WasPressedThisFrame() && m_delayPauseBackTime <= 0)
+                //if (OVRInput.GetUp(m_actionButton) && m_delayPauseBackTime <= 0)
                 {
                     SpwanCurrentDetectedObjects();
                 }
@@ -80,8 +113,8 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                 }
             }
 
-            // Not start a sentis inference if the app is paused or we don't have a valid WebCamTexture
-            if (m_isPaused || !hasWebCamTextureData)
+            // Not start a sentis inference if the app is paused or we don't have a valid texture
+            if (m_isPaused || !hasValidTexture)
             {
                 if (m_isPaused)
                 {
@@ -94,7 +127,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             // Run a new inference when the current inference finishes
             if (!m_runInference.IsRunning())
             {
-                m_runInference.RunInference(m_webCamTextureManager.WebCamTexture);
+                m_runInference.RunInference(currentTexture);
             }
         }
         #endregion
@@ -112,6 +145,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             m_spwanedEntities.Clear();
             OnObjectsIdentified?.Invoke(-1);
         }
+
         /// <summary>
         /// Spwan 3d markers for the detected objects
         /// </summary>

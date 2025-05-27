@@ -45,21 +45,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94f39b6ee0e7e784aafa2d2facf740e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _webCamTextureManager: {fileID: 0}
-  actionButton: 1
-  uiMenuManager: {fileID: 0}
+  m_webCamTextureManager: {fileID: 0}
+  m_actionButton: {fileID: 0}
+  m_uiMenuManager: {fileID: 0}
   m_spwanMarker: {fileID: 4199183768428282981, guid: be69472e7a9b58243aa0493fa78acef1, type: 3}
   m_environmentRaycast: {fileID: 0}
   m_spawnDistance: 0.25
   m_placeSound: {fileID: 6861101848614438543}
   m_runInference: {fileID: 0}
   m_uiInference: {fileID: 0}
+  m_testImageManager: {fileID: 0}
   OnObjectsIdentified:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: ScannerUiMenuManager, Assembly-CSharp
-        m_MethodName: OnObjectsIndentified
+        m_MethodName: 
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -80,6 +81,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 3327ace5a003c054bb9ed11651b01c25, type: 3}
+  m_Resource: {fileID: 8300000, guid: 3327ace5a003c054bb9ed11651b01c25, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 0.8
   m_Pitch: 2

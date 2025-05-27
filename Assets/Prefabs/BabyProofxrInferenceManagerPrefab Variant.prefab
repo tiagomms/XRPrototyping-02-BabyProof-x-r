@@ -63,6 +63,9 @@ PrefabInstance:
       addedObject: {fileID: 1424424383851876144}
     - targetCorrespondingSourceObject: {fileID: 5228241647023865434, guid: 927c1b782bb796b4b9b433d533cbccca, type: 3}
       insertIndex: -1
+      addedObject: {fileID: 3571336579663893556}
+    - targetCorrespondingSourceObject: {fileID: 5228241647023865434, guid: 927c1b782bb796b4b9b433d533cbccca, type: 3}
+      insertIndex: -1
       addedObject: {fileID: 2622863369072514385}
   m_SourcePrefab: {fileID: 100100000, guid: 927c1b782bb796b4b9b433d533cbccca, type: 3}
 --- !u!114 &2061006717274769467 stripped
@@ -105,11 +108,35 @@ MonoBehaviour:
   OnObjectsDetected:
     m_PersistentCalls:
       m_Calls: []
+  hazardPrefabManager: {fileID: 3571336579663893556}
   m_dangerousBoxColor: {r: 0.99215686, g: 0.76530504, b: 0.36078426, a: 0.60784316}
   m_dangerousFontColor: {r: 0.99215686, g: 0.7647059, b: 0.36078432, a: 1}
   chockingHazardMaxSize: 0.032
   m_chockingBoxColor: {r: 0.99215686, g: 0.41031057, b: 0.36078426, a: 0.60784316}
   m_chockingFontColor: {r: 0.99215686, g: 0.4117647, b: 0.36078432, a: 1}
+  m_testImageManager: {fileID: 0}
+  m_debugCamera: {fileID: 0}
+--- !u!114 &3571336579663893556
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6191242826505204494}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee8a4cc8bcb6a2d48bfda71e9339b857, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dangerousPrefab: {fileID: 7166376608709615182, guid: 1137c384f84213d49bd946a82f76840f, type: 3}
+  chokingPrefab: {fileID: 8969250706746887371, guid: 472c0f8e8a46e274db61255de9d79cf5, type: 3}
+  matchThreshold: 0.3
+  minMovementThreshold: 0.02
+  yOffset: 0.1
+  lerpSpeed: 20
+  maxFramesUnmatched: 5
+  spawnScaleDuration: 0.3
+  destroyScaleDuration: 0.2
 --- !u!114 &2622863369072514385
 MonoBehaviour:
   m_ObjectHideFlags: 0

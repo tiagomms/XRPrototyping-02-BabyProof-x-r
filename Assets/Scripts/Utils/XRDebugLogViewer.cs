@@ -75,7 +75,23 @@ public class XRDebugLogViewer : MonoBehaviour
 
     private void Start()
     {
-        ClearLogs(); // Initialize log view on start
+        // Initialize the text component settings
+        if (logText != null)
+        {
+            //logText.overflowMode = TextOverflowModes.Overflow;
+            //logText.alignment = TextAlignmentOptions.TopLeft;
+            //logText.enableWordWrapping = true;
+        }
+
+        // Initialize the scroll rect
+        if (scrollRect != null)
+        {
+            scrollRect.vertical = true;
+            scrollRect.horizontal = false;
+            scrollRect.scrollSensitivity = 20f;
+        }
+
+        ClearLogs();
     }
 
     // === Public Logging API ===
@@ -85,6 +101,11 @@ public class XRDebugLogViewer : MonoBehaviour
     /// </summary>
     public static void Log(string message)
     {
+        // Debug: Log the message before passing to AddLog
+        //Debug.Log($"[XRDebugLogViewer] Log called with message: {message}");
+        //Debug.Log($"[XRDebugLogViewer] Message length: {message?.Length ?? 0}");
+        //Debug.Log($"[XRDebugLogViewer] Message bytes: {BitConverter.ToString(System.Text.Encoding.UTF8.GetBytes(message ?? ""))}");
+
         Instance?.AddLog(message, Instance.infoColor);
         Instance?.WriteToDebug(message, LogType.Default);
     }
@@ -138,12 +159,19 @@ public class XRDebugLogViewer : MonoBehaviour
 
     private void AddLog(string message, Color color)
     {
-        //string logCounterFormat = String.Format("{0:0000}", logCounter);
+        // Debug: Log the message as received by AddLog
+        //Debug.Log($"[XRDebugLogViewer] AddLog received message: {message}");
+        //Debug.Log($"[XRDebugLogViewer] AddLog message length: {message?.Length ?? 0}");
+        //Debug.Log($"[XRDebugLogViewer] AddLog message bytes: {BitConverter.ToString(System.Text.Encoding.UTF8.GetBytes(message ?? ""))}");
+
         string prefix = useTimestamps
             ? $"[{DateTime.Now:HH:mm:ss}]"
             : $"[{logCounter:0000}]";
 
         string coloredMessage = $"<color=#{ColorUtility.ToHtmlStringRGB(color)}>{prefix} {message}</color>";
+
+        // Debug: Log the formatted message
+        //Debug.Log($"[XRDebugLogViewer] Formatted message: {coloredMessage}");
 
         logLines.Add(coloredMessage);
         logCounter++;
@@ -156,7 +184,12 @@ public class XRDebugLogViewer : MonoBehaviour
 
     private void UpdateDisplay()
     {
-        logText.text = string.Join("\n", logLines);
+        // Debug: Log the text being set
+        string displayText = string.Join("\n", logLines);
+        //Debug.Log($"[XRDebugLogViewer] Setting text to display:\n{displayText}");
+
+        // Ensure the text is properly formatted with newlines
+        logText.text = displayText;
 
         // Force Unity to update layout and scroll to bottom
         Canvas.ForceUpdateCanvases();
@@ -166,7 +199,10 @@ public class XRDebugLogViewer : MonoBehaviour
     private void ClearLogs()
     {
         logLines.Clear();
-        logText.text = string.Empty;
+        if (logText != null)
+        {
+            logText.text = string.Empty;
+        }
         logCounter = 0;
     }
 }
