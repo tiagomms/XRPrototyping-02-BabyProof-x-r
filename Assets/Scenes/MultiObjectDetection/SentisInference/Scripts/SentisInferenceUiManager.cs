@@ -179,7 +179,11 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             //Set box position
             panel.transform.localPosition = new Vector3(box.CenterX, -box.CenterY, box.WorldPos.HasValue ? box.WorldPos.Value.z : 0.0f);
             //Set box rotation
+#if UNITY_EDITOR
+            
+#else
             panel.transform.rotation = Quaternion.LookRotation(panel.transform.position - m_detectionCanvas.GetCapturedCameraPosition());
+#endif
             //Set box size
             var rt = panel.GetComponent<RectTransform>();
             rt.sizeDelta = new Vector2(box.Width, box.Height);

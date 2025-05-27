@@ -158,10 +158,15 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                 {
                     continue;
                 }
-                var label = m_labels[labelIDs[n]];
+                string label = m_labels[labelIDs[n]].Trim().Replace(" ", "_").Replace("\n", "_").Replace("\r", "_").Replace("\t", "_");
 
-                XRDebugLogViewer.Log($"{label}: Dangerous: {isDangerousObject} ; ChockingHazard {isChockingHazard};\nsurroundingDistance {String.Join(';', surroundBoxWorldDistance)}\n");
+                string message = string.Format("{0}: Dangerous: {1} ; ChockingHazard {2};\nSurrounding Distance: {3}",
+                    label,
+                    isDangerousObject,
+                    isChockingHazard,
+                    string.Join("; ", surroundBoxWorldDistance));
 
+                XRDebugLogViewer.Log(message);
 
                 // filtered - let's do this
                 // Get object class name

@@ -137,7 +137,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                 }
                 catch (Exception e)
                 {
-                    Debug.LogError($"Sentis error: {e.Message}");
+                    XRDebugLogViewer.LogError($"Sentis error: {e.Message}");
                 }
             }
         }
@@ -154,7 +154,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             }
             else
             {
-                Debug.LogError("Sentis: No data output m_output");
+                XRDebugLogViewer.LogError("Sentis: No data output m_output");
                 m_download_state = 4;
             }
         }
@@ -172,7 +172,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             }
             else
             {
-                Debug.LogError("Sentis: No data output m_labelIDs");
+                XRDebugLogViewer.LogError("Sentis: No data output m_labelIDs");
                 m_download_state = 4;
             }
         }
@@ -201,7 +201,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                             }
                             else
                             {
-                                Debug.LogError("Sentis: m_output empty");
+                                XRDebugLogViewer.LogError("Sentis: m_output empty");
                                 m_download_state = 4;
                             }
                         }
@@ -226,7 +226,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                             }
                             else
                             {
-                                Debug.LogError("Sentis: m_labelIDs empty");
+                                XRDebugLogViewer.LogError("Sentis: m_labelIDs empty");
                                 m_download_state = 4;
                             }
                         }

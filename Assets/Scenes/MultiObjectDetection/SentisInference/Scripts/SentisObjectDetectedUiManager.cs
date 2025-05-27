@@ -19,6 +19,8 @@ namespace PassthroughCameraSamples.MultiObjectDetection
 
         [Header("Test in play mode")]
         [SerializeField] protected TestImageManager m_testImageManager;
+        [SerializeField] protected Camera m_debugCamera;
+
         private Pose m_captureCameraPose;
         private Vector3 m_capturePosition;
         private Quaternion m_captureRotation;
@@ -70,8 +72,10 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         {
 #if UNITY_EDITOR
             // In editor, use a default position
-            m_capturePosition = Vector3.forward * m_canvasDistance;
-            m_captureRotation = Quaternion.identity;
+            m_capturePosition = m_testImageManager.transform.position - m_debugCamera.transform.forward * 0.02f;
+            m_captureRotation = m_testImageManager.transform.rotation;
+            //Vector3 direction = m_testImageManager.transform.position - m_debugCamera.transform.position;
+            //m_captureRotation = Quaternion.LookRotation(direction);//Quaternion.Euler(0, m_testImageManager.transform.rotation.y, 0);
             return;
 #endif
 
