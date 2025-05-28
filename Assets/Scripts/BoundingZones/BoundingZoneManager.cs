@@ -16,8 +16,8 @@ public class BoundingZoneManager : MonoBehaviour
 
 
     private List<BoundingZoneChecker> allZones = new List<BoundingZoneChecker>();
+    public List<BoundingZoneChecker> AllZones => allZones;
     private MRUK _mruk;
-    private List<MRUKAnchor> _mrukVolumeAnchors;
 
     private bool isDebugModeOn = false;
 
@@ -70,7 +70,6 @@ public class BoundingZoneManager : MonoBehaviour
     public void SetupBoundingZones(List<MRUKAnchor> anchors)
     {
         allZones.Clear();
-        _mrukVolumeAnchors = anchors;
 
         foreach (MRUKAnchor anchor in anchors)
         {

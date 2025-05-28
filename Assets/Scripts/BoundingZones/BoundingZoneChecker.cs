@@ -1,5 +1,6 @@
 using UnityEngine;
 using Meta.XR.MRUtilityKit;
+using System.IO;
 
 public class BoundingZoneChecker : MonoBehaviour
 {
@@ -19,6 +20,9 @@ public class BoundingZoneChecker : MonoBehaviour
 
     private Bounds externalBounds;
     private Bounds internalBounds;
+    public Bounds ExternalBounds => externalBounds;
+
+    public Bounds InternalBounds => internalBounds;
 
     private GameObject externalCube;
     private GameObject internalCube;
@@ -66,7 +70,10 @@ public class BoundingZoneChecker : MonoBehaviour
     {
         // Convert point into local space of the face
         Vector3 localPoint = transform.InverseTransformPoint(worldPoint);
-        if (labelID == MRUKAnchor.SceneLabels.FLOOR)
+        if (
+            labelID == MRUKAnchor.SceneLabels.FLOOR || 
+            internalBounds.extents.x == 0f || internalBounds.extents.y == 0f || internalBounds.extents.z == 0f  
+        ) // if internal bounds is plane/line/dot then I just want to check external bounds
         {
             return externalBounds.Contains(localPoint);
         }
