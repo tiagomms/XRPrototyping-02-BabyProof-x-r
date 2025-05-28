@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using Meta.XR.Samples;
 using Unity.Sentis;
 using UnityEngine;
+using PassthroughCameraSamples.MultiObjectDetection;
 
 namespace PassthroughCameraSamples.MultiObjectDetection
 {
@@ -17,11 +18,14 @@ namespace PassthroughCameraSamples.MultiObjectDetection
 
         [Header("BabyProofxr filter")]
         [SerializeField] protected TextAsset m_dangerousLabelAssets;
+        [SerializeField] private float chockingHazardMaxSize = 0.032f;
 
         [Space(40)]
 
         #region Babyproofxr private variables
         private bool m_isPartOfRiskObjects = false;
+        private BabyProofxrFilter m_filter;
+        private string[] m_labels;
 
         #endregion
 
@@ -32,6 +36,20 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             yield return new WaitForSeconds(0.05f);
 
             m_babyProofxrUiInference.SetLabels(m_labelsAsset, m_dangerousLabelAssets);
+            m_labels = m_labelsAsset.text.Split('\n');
+            
+            // Initialize the filter
+            var dangerousLabelDict = new Dictionary<int, string>();
+            var dangerousLabelsSplit = m_dangerousLabelAssets.text.Split('\n');
+            foreach (string dangerousLabel in dangerousLabelsSplit)
+            {
+                int mlClassificationIndex = Array.IndexOf(m_labels, dangerousLabel);
+                if (mlClassificationIndex >= 0)
+                {
+                    dangerousLabelDict.Add(mlClassificationIndex, dangerousLabel);
+                }
+            }
+            m_filter = new BabyProofxrFilter(chockingHazardMaxSize, dangerousLabelDict);
 
             LoadModel();
         }
@@ -44,7 +62,6 @@ namespace PassthroughCameraSamples.MultiObjectDetection
 
         #region Inference Functions
 
-        // NOTE: Right now it is exactly the same as in the <<nameof(SentisInferenceRunManager)>>
         protected override void GetInferencesResults()
         {
             // Get the different outputs in diferent frames to not block the main thread.
@@ -101,30 +118,33 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                     }
                     break;
                 case 3:
-                /*
-                    // NOTE: stage 3 - where I need to filter and send to accurate ui box
                     if (!m_isWaiting)
                     {
-                        FilterResults();
-                    }
-                    else
-                    {
-                        // NOTE: this is sync op for now
-                        if (m_isPartOfRiskObjects)
-                        {
-                            // TODO: based on filter results determine what we do
-                            m_babyProofxrUiInference.DrawUIBoxes(m_output, m_labelIDs, m_inputSize.x, m_inputSize.y);
-                        }
-                        m_isWaiting = false;
-                        m_babyProofxrUiInference.DrawUIBoxes(m_output, m_labelIDs, m_inputSize.x, m_inputSize.y);
+                        // Get camera resolution
+                        Vector2Int camRes;
+#if !UNITY_EDITOR
+                        var intrinsics = PassthroughCameraUtils.GetCameraIntrinsics(CameraEye);
+                        camRes = intrinsics.Resolution;
+#else
+                        camRes = new Vector2Int(1280, 960);
+#endif
+                        // Filter the results
+                        var filteredBoxes = m_filter.FilterResults(
+                            m_output,
+                            m_labelIDs,
+                            m_labels,
+                            m_babyProofxrUiInference.DisplayWidth,
+                            m_babyProofxrUiInference.DisplayHeight,
+                            m_inputSize.x,
+                            m_inputSize.y,
+                            camRes,
+                            m_babyProofxrUiInference.EnvironmentRaycast
+                        );
 
+                        // Update UI with filtered results
+                        m_babyProofxrUiInference.DrawUIBoxes(filteredBoxes);
                         m_download_state = 5;
                     }
-                */
-                
-                    m_babyProofxrUiInference.DrawUIBoxes(m_output, m_labelIDs, m_inputSize.x, m_inputSize.y);
-                    m_download_state = 5;
-
                     break;
                 case 4:
                     m_babyProofxrUiInference.OnObjectDetectionError();

@@ -10,6 +10,7 @@ using Unity.Sentis;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using PassthroughCameraSamples.Utils;
 
 namespace PassthroughCameraSamples.MultiObjectDetection
 {
@@ -36,6 +37,11 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         
         private string[] m_dangerousLabels;
         private Dictionary<int, string> m_dangerousLabelAssetDict;
+
+        // Public properties for the filter
+        public float DisplayWidth => m_displayImage.rectTransform.rect.width;
+        public float DisplayHeight => m_displayImage.rectTransform.rect.height;
+        public EnvironmentRayCastSampleManager EnvironmentRaycast => m_environmentRaycast;
 
         //bounding box data
         public struct BabyProofBoundingBox
@@ -75,132 +81,30 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             }
         }
 
-        public override void DrawUIBoxes(Tensor<float> output, Tensor<int> labelIDs, float imageWidth, float imageHeight)
+        /// <summary>
+        /// Draws UI boxes for pre-filtered bounding boxes
+        /// </summary>
+        public void DrawUIBoxes(List<BabyProofBoundingBox> filteredBoxes)
         {
-            // Updte canvas position
+            // Update canvas position
             m_detectionCanvas.UpdatePosition();
 
             // Clear current boxes
             ClearAnnotations();
 
-            var displayWidth = m_displayImage.rectTransform.rect.width;
-            var displayHeight = m_displayImage.rectTransform.rect.height;
-
-            var scaleX = displayWidth / imageWidth;
-            var scaleY = displayHeight / imageHeight;
-
-            var halfWidth = displayWidth / 2;
-            var halfHeight = displayHeight / 2;
-
-            var boxesFound = output.shape[0];
-            if (boxesFound <= 0)
+            if (filteredBoxes.Count == 0)
             {
-                hazardPrefabManager.UpdateHazards(new ());
+                hazardPrefabManager.UpdateHazards(new());
                 OnObjectsDetected?.Invoke(0);
                 return;
             }
-            var maxBoxes = Mathf.Min(boxesFound, 200);
 
-#if !UNITY_EDITOR
+            OnObjectsDetected?.Invoke(filteredBoxes.Count);
 
-            //Get the camera intrinsics
-            var intrinsics = PassthroughCameraUtils.GetCameraIntrinsics(CameraEye);
-            var camRes = intrinsics.Resolution;
-            XRDebugLogViewer.Log($"Camera Resolution {camRes}");
-#else
-            // TODO: hardcoded, in the future, get image original resolution
-            var camRes = new Vector2Int(1280, 960); 
-#endif 
-            int boxesDetected = 0;
-            List<BabyProofBoundingBox> tempBoundingBoxes = new();
-
-            //Draw the bounding boxes
-            for (var n = 0; n < boxesFound; n++)
+            // Draw each filtered box
+            for (int i = 0; i < filteredBoxes.Count; i++)
             {
-                // Get bounding box center coordinates
-                var centerX = output[n, 0] * scaleX - halfWidth;
-                var centerY = output[n, 1] * scaleY - halfHeight;
-                var boxWidth = output[n, 2] * scaleX;
-                var boxHeight = output[n, 3] * scaleY;
-
-                var centerPerX = (centerX + halfWidth) / displayWidth;
-                var centerPerY = (centerY + halfHeight) / displayHeight;
-                Vector3? centerWorldPos = CalculateWorldPosition(ref camRes, centerPerX, centerPerY);
-
-                // Calculate surrounding box size in the real world (to understand if it is a chocking hazard)
-                Vector2[] vector2s = {
-                    new Vector2(-boxWidth / 2, 0),
-                    new Vector2(boxWidth / 2, 0),
-                    new Vector2(0, -boxHeight / 2),
-                    new Vector2(0, boxHeight / 2)
-                };
-                float[] surroundBoxWorldDistance = new float[4];
-                for (int i = 0; i < vector2s.Length; i++)
-                {
-                    Vector2 v2 = vector2s[i];
-
-                    float perX = (centerX + halfWidth + v2.x) / displayWidth;
-                    float perY = (centerY + halfHeight + v2.y) / displayHeight;
-                    Vector3? worldPos = CalculateWorldPosition(ref camRes, perX, perY);
-
-                    surroundBoxWorldDistance[i] = worldPos != null ? Vector3.Distance((Vector3)centerWorldPos, (Vector3)worldPos) : Mathf.Infinity;
-                }
-
-                // If any of the sizes is a chocking hazard (object small on both sides)
-                bool isChockingHazard = surroundBoxWorldDistance[0] + surroundBoxWorldDistance[1] < chockingHazardMaxSize
-                    && surroundBoxWorldDistance[2] + surroundBoxWorldDistance[3] < chockingHazardMaxSize;
-
-                // check if it is on the list of dangerous objects
-                bool isDangerousObject = m_dangerousLabelAssetDict.ContainsKey(labelIDs[n]);
-
-                // remove if object is not dangerous nor chockingHazard
-                if (!isDangerousObject && !isChockingHazard)
-                {
-                    continue;
-                }
-                string label = m_labels[labelIDs[n]].Trim().Replace(" ", "_").Replace("\n", "_").Replace("\r", "_").Replace("\t", "_");
-
-                string message = string.Format("{0}: Dangerous: {1} ; ChockingHazard {2};\nSurrounding Distance: {3}",
-                    label,
-                    isDangerousObject,
-                    isChockingHazard,
-                    string.Join("; ", surroundBoxWorldDistance));
-
-                XRDebugLogViewer.Log(message);
-
-                // filtered - let's do this
-                // Get object class name
-                var classname = m_labels[labelIDs[n]].Replace(" ", "_");
-                // Create a new bounding box
-                var box = new BabyProofBoundingBox
-                {
-                    BaseBox = new BoundingBox
-                    {
-                        CenterX = centerX,
-                        CenterY = centerY,
-                        Width = boxWidth,
-                        Height = boxHeight,
-                        //Label = $"Id: {n} Class: {classname} Center (px): {(int)centerX},{(int)centerY} Center (%): {centerPerX:0.00},{centerPerY:0.00}",
-                        Label = $"{label}",
-                        WorldPos = centerWorldPos,
-                        ClassName = classname
-                    },
-                    Id = n,
-                    IsDangerous = isDangerousObject,
-                    IsChockingHazard = isChockingHazard
-                };
-
-                boxesDetected++;
-                tempBoundingBoxes.Add(box);
-            }
-            // limit results
-            boxesDetected = Mathf.Min(boxesDetected, 200);
-
-            OnObjectsDetected?.Invoke(boxesDetected);
-
-            for (int i = 0; i < boxesDetected; i++)
-            {
-                BabyProofBoundingBox box = tempBoundingBoxes[i];
+                BabyProofBoundingBox box = filteredBoxes[i];
                 // Add to the list of boxes
                 BoxDrawn.Add(box.BaseBox);
 
@@ -211,10 +115,15 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                 DrawBox(box.BaseBox, i, color, fontColor);
             }
 
-            hazardPrefabManager.UpdateHazards(tempBoundingBoxes);
-            tempBoundingBoxes.Clear();
+            hazardPrefabManager.UpdateHazards(filteredBoxes);
         }
 
+        // Keep the original method for backward compatibility
+        public override void DrawUIBoxes(Tensor<float> output, Tensor<int> labelIDs, float imageWidth, float imageHeight)
+        {
+            // This method is now deprecated and should not be used
+            Debug.LogWarning("Using deprecated DrawUIBoxes method. Please use the filtered version instead.");
+        }
 
         private Vector3? CalculateWorldPosition(ref Vector2Int camRes, float perX, float perY)
         {
