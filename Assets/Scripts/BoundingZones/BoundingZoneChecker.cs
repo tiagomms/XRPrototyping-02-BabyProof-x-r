@@ -9,7 +9,6 @@ public class BoundingZoneChecker : MonoBehaviour
 
     [Header("Plane Setup")]
     [SerializeField] public Rect boundsRect { get; private set; } // In local XZ space: position = local center, size = width/height
-    [SerializeField] public Matrix4x4 planeMatrix { get; private set; } // World-space center + rotation
 
     [Header("Config")]
     [SerializeField] public LabelOffsetConfig offsetConfig { get; private set; }
@@ -20,24 +19,20 @@ public class BoundingZoneChecker : MonoBehaviour
 
     private Bounds externalBounds;
     private Bounds internalBounds;
-    private Matrix4x4 inverseMatrix;
 
     private GameObject externalCube;
     private GameObject internalCube;
 
     private LabelOffsetConfig.OffsetSet _defaultOffsetConfig = new() { Horizontal = 0.2f, Vertical = 0.2f };
 
-    public void Initialize(MRUKAnchor.SceneLabels labelID, string id, Rect boundsRect, Matrix4x4 faceTransform, LabelOffsetConfig offsetConfig, Material externalMaterial, Material internalMaterial)
+    public void Initialize(MRUKAnchor.SceneLabels labelID, string id, Rect boundsRect, LabelOffsetConfig offsetConfig, Material externalMaterial, Material internalMaterial)
     {
         this.labelID = labelID;
         this.id = id;
         this.boundsRect = boundsRect;
-        this.planeMatrix = faceTransform;
         this.offsetConfig = offsetConfig;
         this.externalMaterial = externalMaterial;
         this.internalMaterial = internalMaterial;
-
-        inverseMatrix = faceTransform.inverse;
 
         SetupBounds();
     }
@@ -63,12 +58,14 @@ public class BoundingZoneChecker : MonoBehaviour
         // Start with local-aligned bounds
         externalBounds = new Bounds(Vector3.zero, extents * 2f);
         internalBounds = new Bounds(Vector3.zero, internalExtents * 2f);
+
+
     }
 
     public bool IsPointInZone(Vector3 worldPoint)
     {
         // Convert point into local space of the face
-        Vector3 localPoint = inverseMatrix.MultiplyPoint3x4(worldPoint);
+        Vector3 localPoint = transform.InverseTransformPoint(worldPoint);
         if (labelID == MRUKAnchor.SceneLabels.FLOOR)
         {
             return externalBounds.Contains(localPoint);
@@ -83,12 +80,12 @@ public class BoundingZoneChecker : MonoBehaviour
         SetupBounds();
 
         Matrix4x4 oldMatrix = Gizmos.matrix;
-        Gizmos.matrix = planeMatrix;
+        Gizmos.matrix = transform.localToWorldMatrix;
 
         Gizmos.color = Color.green;
-        Gizmos.DrawWireCube(boundsRect.center, externalBounds.size);
+        Gizmos.DrawWireCube(Vector3.zero, externalBounds.size);
         Gizmos.color = Color.red;
-        Gizmos.DrawWireCube(boundsRect.center, internalBounds.size);
+        Gizmos.DrawWireCube(Vector3.zero, internalBounds.size);
 
         Gizmos.matrix = oldMatrix;
     }
@@ -99,16 +96,16 @@ public class BoundingZoneChecker : MonoBehaviour
 
         externalCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
         externalCube.transform.SetParent(transform, false);
-        externalCube.transform.localPosition = boundsRect.center;
+        externalCube.transform.localPosition = Vector3.zero;
         externalCube.transform.localRotation = Quaternion.identity;
         externalCube.transform.localScale = externalBounds.size;
         externalCube.GetComponent<Renderer>().material = externalMaterial;
 
         internalCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
         internalCube.transform.SetParent(transform, false);
-        internalCube.transform.localPosition = boundsRect.center;
+        internalCube.transform.localPosition = Vector3.zero;
         internalCube.transform.localRotation = Quaternion.identity;
-        internalCube.transform.localScale = internalBounds.size * 1.01f; // just to be sure it is seen
+        internalCube.transform.localScale = internalBounds.size;
         internalCube.GetComponent<Renderer>().material = internalMaterial;
 
         Destroy(externalCube.GetComponent<Collider>());

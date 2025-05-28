@@ -75,62 +75,51 @@ public class BoundingZoneManager : MonoBehaviour
         foreach (MRUKAnchor anchor in anchors)
         {
             Rect bounds = new();
-            Matrix4x4 faceTransform = anchor.transform.localToWorldMatrix;
             bool isBoundingZone = false;
 
             if (anchor.Label == MRUKAnchor.SceneLabels.FLOOR)
             {
                 bounds = anchor.PlaneRect.Value;
-                faceTransform *= Matrix4x4.TRS(
-                    new Vector3(0f, 0f, 0f),
-                    Quaternion.Euler(-90f, 0f, 0f),
-                    Vector3.one
-                );
                 // face transform is the anchor itself since it is a plane
                 isBoundingZone = true;
             }
             // it is a volume - we will need to get the upper surface
-            else if (anchor.VolumeBounds != null)
+            else if (anchor.VolumeBounds.HasValue)
             {
+                // NOTE: according to <<AnchorPrefabSpawner>> the anchor z,y orientation is flipped. Hence we want the xy axis
                 bounds = new()
                 {
                     xMin = anchor.VolumeBounds.Value.min.x,
                     xMax = anchor.VolumeBounds.Value.max.x,
-                    yMin = -anchor.VolumeBounds.Value.max.z,
-                    yMax = -anchor.VolumeBounds.Value.min.z
+                    yMin = -anchor.VolumeBounds.Value.max.y,
+                    yMax = -anchor.VolumeBounds.Value.min.y
                 };
                 // by multiplying the transform it moves and rotates accordingly to upper face
-                faceTransform *= Matrix4x4.TRS(
-                    new Vector3(0f, anchor.VolumeBounds.Value.max.y, 0f),
-                    Quaternion.Euler(-90f, 0f, 0f),
-                    Vector3.one
-                );
                 isBoundingZone = true;
             }
 
             // if it is not a anchor to create bounding zones, then ignore
             if (!isBoundingZone) continue;
-            CreateBoundingZone(anchor.Label, bounds, faceTransform);
+            CreateBoundingZone(anchor, bounds);
         }
     }
 
-    private BoundingZoneChecker CreateBoundingZone(MRUKAnchor.SceneLabels labelID, Rect boundsRect, Matrix4x4 faceTransform)
+    private BoundingZoneChecker CreateBoundingZone(MRUKAnchor anchor, Rect boundsRect)
     {
-        XRDebugLogViewer.Log($"{labelID} - Rect {boundsRect}, Transform {faceTransform}");
+        MRUKAnchor.SceneLabels labelID = anchor.Label;
+
+        XRDebugLogViewer.Log($"{labelID} - AnchorPosition {anchor.transform.position} - Rect {boundsRect}");
         string objName = $"Zone_{labelID}_{allZones.Count}";
         GameObject zoneObj = new GameObject(objName);
+        
+        // FIXME: anchors tend to be mostly flat on the XZ axis, so I assume this. In the future, take a better look
+        Quaternion planeAngle = Quaternion.Euler(0f, anchor.transform.eulerAngles.y, 0f);
+        zoneObj.transform.SetPositionAndRotation(anchor.transform.position, planeAngle);
         zoneObj.transform.SetParent(transform);
-
-        // Apply faceTransform (position + rotation only)
-        zoneObj.transform.position = faceTransform.GetPosition();//.GetColumn(3); // position from matrix
-        //zoneObj.transform.rotation = faceTransform.rotation;
-        zoneObj.transform.rotation = Quaternion.LookRotation(
-            faceTransform.GetColumn(2), // forward
-            faceTransform.GetColumn(1)  // up
-        );
+        zoneObj.transform.localScale = Vector3.one;
 
         var checker = zoneObj.AddComponent<BoundingZoneChecker>();
-        checker.Initialize(labelID, objName, boundsRect, faceTransform, defaultOffsetConfig, defaultExternalMaterial, defaultInternalMaterial);
+        checker.Initialize(labelID, objName, boundsRect, defaultOffsetConfig, defaultExternalMaterial, defaultInternalMaterial);
 
         allZones.Add(checker);
         return checker;
