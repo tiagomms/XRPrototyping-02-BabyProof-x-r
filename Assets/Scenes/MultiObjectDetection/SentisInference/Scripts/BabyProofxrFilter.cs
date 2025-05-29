@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Mono.Cecil.Cil;
 using UnityEngine;
 
 namespace PassthroughCameraSamples.MultiObjectDetection
@@ -13,6 +12,8 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         private readonly Dictionary<int, string> dangerousLabelDict;
         private readonly BoundingZoneManager boundingDangerZoneManager;
 
+        private PassthroughCameraEye cameraEye;
+
         [Header("Debug purposes")]
         private readonly TestImageManager testImageManager;
         private readonly Camera debugCamera;
@@ -21,6 +22,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             float chockingHazardMaxSize, 
             Dictionary<int, string> dangerousLabelDict,
             BoundingZoneManager boundingDangerZoneManager,
+            PassthroughCameraEye cameraEye,
             TestImageManager testImageManager,
             Camera debugCamera
         )
@@ -30,6 +32,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             this.boundingDangerZoneManager = boundingDangerZoneManager;
             this.testImageManager = testImageManager;
             this.debugCamera = debugCamera;
+            this.cameraEye = cameraEye;
         }
 
         /// <summary>
@@ -162,35 +165,12 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             return surroundBoxWorldDistance;
         }
 
-        /*
-        private Vector3? CalculateWorldPosition(
-            float perX, float perY,
-            Vector2Int camRes,
-            EnvironmentRayCastSampleManager environmentRaycast)
-        {
-            var centerPixel = new Vector2Int(
-                Mathf.RoundToInt(perX * camRes.x),
-                Mathf.RoundToInt((1.0f - perY) * camRes.y)
-            );
-
-#if !UNITY_EDITOR
-            var ray = PassthroughCameraUtils.ScreenPointToRayInWorld(CameraEye, centerPixel);
-            return environmentRaycast.PlaceGameObjectByScreenPos(ray);
-
-#else
-            // In editor mode, we handle this differently (it is a fixed position from player)
-            // For now, return null to indicate we can't calculate world position
-            return null;
-#endif
-        }
-        */
-
         private Vector3? CalculateWorldPosition(float perX, float perY, Vector2Int camRes, EnvironmentRayCastSampleManager environmentRaycast)
         {
             // Get the 3D marker world position using Depth Raycast
             var centerPixel = new Vector2Int(Mathf.RoundToInt(perX * camRes.x), Mathf.RoundToInt((1.0f - perY) * camRes.y));
 #if !UNITY_EDITOR
-            var ray = PassthroughCameraUtils.ScreenPointToRayInWorld(CameraEye, centerPixel);
+            var ray = PassthroughCameraUtils.ScreenPointToRayInWorld(cameraEye, centerPixel);
 #else
             if (testImageManager == null)
             {
@@ -217,11 +197,9 @@ namespace PassthroughCameraSamples.MultiObjectDetection
 
             // Calculate the offset from the center of the image based on percentages
             // perX: 0 = left edge, 1 = right edge
-            // perY: 0 = bottom edge, 1 = top edge
-            //var xOffset = perX * imageWidth;
-            //var yOffset = (0.5f - perY)* imageHeight; // Invert Y to match Unity's coordinate system
+            // perY: 0 = top edge, 1 = bottom edge
             var xOffset = (perX - 0.5f) * imageWidth;
-            var yOffset = (perY - 0.5f) * imageHeight; // Invert Y to match Unity's coordinate system
+            var yOffset = (perY - 0.5f) * imageHeight;
 
             // Calculate the world position by offsetting from the raw image's center
             var worldPosition = rawImagePosition + 

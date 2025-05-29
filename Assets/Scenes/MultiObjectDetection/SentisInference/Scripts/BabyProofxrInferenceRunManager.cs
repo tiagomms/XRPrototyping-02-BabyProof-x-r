@@ -20,6 +20,8 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         [SerializeField] protected TextAsset m_dangerousLabelAssets;
         [SerializeField] private float chockingHazardMaxSize = 0.032f;
         [SerializeField] private BoundingZoneManager boundingDangerZonesManager;
+        [SerializeField] protected WebCamTextureManager m_webCamTextureManager;
+        protected PassthroughCameraEye CameraEye => m_webCamTextureManager.Eye;
 
         [Space(40)]
         [Header("Debug")]
@@ -32,6 +34,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         private bool m_isPartOfRiskObjects = false;
         private BabyProofxrFilter m_filter;
         private string[] m_labels;
+        private List<BabyProofxrInferenceUiManager.BabyProofBoundingBox> filteredBoxes = new();
 
         #endregion
 
@@ -61,7 +64,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                 Debug.LogWarning($"[{nameof(BabyProofxrInferenceRunManager)} - Play mode testing not possible. Needs a debug camera and TestImageManager]");
             }
 
-            m_filter = new BabyProofxrFilter(chockingHazardMaxSize, dangerousLabelDict, boundingDangerZonesManager, m_testImageManager, m_debugCamera);
+            m_filter = new BabyProofxrFilter(chockingHazardMaxSize, dangerousLabelDict, boundingDangerZonesManager, CameraEye, m_testImageManager, m_debugCamera);
 
             LoadModel();
         }
@@ -130,32 +133,37 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                     }
                     break;
                 case 3:
-
-                    // Get camera resolution
-                    Vector2Int camRes;
+                    if (!m_isWaiting)
+                    {
+                        // Get camera resolution
+                        Vector2Int camRes;
 #if !UNITY_EDITOR
-                    var intrinsics = PassthroughCameraUtils.GetCameraIntrinsics(CameraEye);
-                    camRes = intrinsics.Resolution;
+                        var intrinsics = PassthroughCameraUtils.GetCameraIntrinsics(CameraEye);
+                        camRes = intrinsics.Resolution;
 #else
-                    camRes = debugImgResolution;
+                        camRes = debugImgResolution;
 #endif
-                    // Filter the results
-                    var filteredBoxes = m_filter.FilterResults(
-                        m_output,
-                        m_labelIDs,
-                        m_labels,
-                        m_babyProofxrUiInference.DisplayWidth,
-                        m_babyProofxrUiInference.DisplayHeight,
-                        m_inputSize.x,
-                        m_inputSize.y,
-                        camRes,
-                        m_babyProofxrUiInference.EnvironmentRaycast
-                    );
+                        // Filter the results
+                        filteredBoxes = m_filter.FilterResults(
+                            m_output,
+                            m_labelIDs,
+                            m_labels,
+                            m_babyProofxrUiInference.DisplayWidth,
+                            m_babyProofxrUiInference.DisplayHeight,
+                            m_inputSize.x,
+                            m_inputSize.y,
+                            camRes,
+                            m_babyProofxrUiInference.EnvironmentRaycast
+                        );
 
-                    // Update UI with filtered results
-                    m_babyProofxrUiInference.ProcessFilteredEntries(filteredBoxes);
-                    m_download_state = 5;
-
+                        m_isWaiting = true;
+                    }
+                    else
+                    {
+                        // Update UI with filtered results
+                        m_babyProofxrUiInference.ProcessFilteredEntries(filteredBoxes);
+                        m_download_state = 5;
+                    }
                     break;
                 case 4:
                     m_babyProofxrUiInference.OnObjectDetectionError();
@@ -164,6 +172,9 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                 case 5:
                     m_download_state++;
                     m_started = false;
+
+                    filteredBoxes.Clear();
+
                     m_output?.Dispose();
                     m_labelIDs?.Dispose();
                     break;

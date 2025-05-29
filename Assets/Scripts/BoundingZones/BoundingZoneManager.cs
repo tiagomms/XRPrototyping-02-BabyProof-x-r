@@ -20,8 +20,15 @@ public class BoundingZoneManager : MonoBehaviour
     public List<BoundingZoneChecker> AllZones => allZones;
     private MRUK _mruk;
 
-    private bool isDebugModeOn = false;
+    public enum DebugState
+    {
+        None = 0,
+        ShowInternal = 1,
+        ShowExternal = 2,
+        ShowBoth = 3
+    }
 
+    private DebugState _debugState = DebugState.None;
 
     public void Initialize()
     {
@@ -55,19 +62,6 @@ public class BoundingZoneManager : MonoBehaviour
         debugButton.action.started -= ToggleDebugMode;
     }
 
-    private void ToggleDebugMode(InputAction.CallbackContext context)
-    {
-        if (!_mruk) return;
-
-        if (!isDebugModeOn)
-        {
-            ShowDebugBoundingZones();
-        }
-        else
-        {
-            HideDebugBoundingZones();
-        }
-    }
 
     public void SetupBoundingZones(List<MRUKAnchor> anchors)
     {
@@ -126,24 +120,6 @@ public class BoundingZoneManager : MonoBehaviour
         return checker;
     }
 
-    public void ShowDebugBoundingZones()
-    {
-        foreach (var item in allZones)
-        {
-            item.ShowDebugCubes();
-        }
-        isDebugModeOn = true;
-    }
-
-    public void HideDebugBoundingZones()
-    {
-        foreach (var item in allZones)
-        {
-            item.HideDebugCubes();
-        }
-        isDebugModeOn = false;
-    }
-
     /// <summary>
     /// Returns the first zone label where the point is in range.
     /// </summary>
@@ -178,5 +154,42 @@ public class BoundingZoneManager : MonoBehaviour
     public string GetZoneID(Vector3 point)
     {
         return TryGetZone(point, out var zone) ? zone.id : null;
+    }
+
+
+    
+    private void ToggleDebugMode(InputAction.CallbackContext context)
+    {
+        if (!_mruk) return;
+        var newState = (DebugState)(((int)_debugState + 1) % 4);
+
+        switch (newState)
+        {
+            case DebugState.None:
+                foreach (var item in allZones)
+                {
+                    item.HideDebugCubes();
+                }
+                break;
+            case DebugState.ShowInternal:
+                foreach (var item in allZones)
+                {
+                    item.ShowOnlyInternalCube();
+                }
+                break;
+            case DebugState.ShowExternal:
+                foreach (var item in allZones)
+                {
+                    item.ShowOnlyExternalCube();
+                }
+                break;
+            case DebugState.ShowBoth:
+                foreach (var item in allZones)
+                {
+                    item.ShowBothDebugCubes();
+                }
+                break;
+        }
+        _debugState = newState;
     }
 }

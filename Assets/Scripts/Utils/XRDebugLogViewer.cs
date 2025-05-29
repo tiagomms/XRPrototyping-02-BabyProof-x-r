@@ -33,25 +33,36 @@ public class XRDebugLogViewer : MonoBehaviour
         }
 
         Instance = this;
+        
+        if (disableLogs)
+        {
+            transform.GetChild(0).gameObject.SetActive(false);
+        }
     }
 
-    // === UI References ===
+    // === Settings ===
 
+    [Header("Settings")]
+    [SerializeField] private bool disableLogs = false;
+#if UNITY_EDITOR
+    [SerializeField] private bool linkToDebugLog = true;
+#else
+    [SerializeField] private bool linkToDebugLog = false;
+#endif
+    [Tooltip("Maximum number of log entries to retain. Older entries will be discarded.")]
+    [SerializeField] private int maxLogCount = 1000;
+
+    [Tooltip("If true, prepend each log with a timestamp. If false, prepend with incrementing index.")]
+    [SerializeField] private bool useTimestamps = true;
+
+
+    [Space]
     [Header("UI References")]
     [Tooltip("Reference to the ScrollRect controlling vertical scrolling.")]
     [SerializeField] private ScrollRect scrollRect;
 
     [Tooltip("Reference to the TextMeshProUGUI element displaying the logs.")]
     [SerializeField] private TextMeshProUGUI logText;
-
-    // === Settings ===
-
-    [Header("Settings")]
-    [Tooltip("Maximum number of log entries to retain. Older entries will be discarded.")]
-    [SerializeField] private int maxLogCount = 1000;
-
-    [Tooltip("If true, prepend each log with a timestamp. If false, prepend with incrementing index.")]
-    [SerializeField] private bool useTimestamps = true;
 
     // === Colors ===
 
@@ -65,8 +76,7 @@ public class XRDebugLogViewer : MonoBehaviour
     [Tooltip("Text color for errors.")]
     [SerializeField] private Color errorColor = Color.red;
 
-    [Space]
-    [SerializeField] private bool linkToDebugLog = true;
+
 
     // === Internal State ===
 

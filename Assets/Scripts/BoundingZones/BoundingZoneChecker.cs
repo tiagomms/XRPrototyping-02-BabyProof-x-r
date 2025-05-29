@@ -27,7 +27,7 @@ public class BoundingZoneChecker : MonoBehaviour
     private GameObject externalCube;
     private GameObject internalCube;
 
-    private LabelOffsetConfig.OffsetSet _defaultOffsetConfig = new() { Horizontal = 0.2f, Vertical = 0.2f };
+    private LabelOffsetConfig.OffsetSet _defaultOffsetConfig = new() { HorizontalRatio = 1.2f, VerticalMeters = 0.2f };
 
     public void Initialize(MRUKAnchor.SceneLabels labelID, string id, Rect boundsRect, LabelOffsetConfig offsetConfig, Material externalMaterial, Material internalMaterial)
     {
@@ -46,24 +46,25 @@ public class BoundingZoneChecker : MonoBehaviour
             ? offsetConfig.GetOffsets(labelID)
             : (_defaultOffsetConfig, _defaultOffsetConfig);
 
+        // Calculate horizontal offsets based on ratios
+        float externalHorizontalOffset = boundsRect.width * (externalOffset.HorizontalRatio - 1f);
+        float internalHorizontalOffset = boundsRect.width * internalOffset.HorizontalRatio;
 
         Vector3 extents = new Vector3(
-            boundsRect.width * 0.5f + externalOffset.Horizontal,
-            externalOffset.Vertical,
-            boundsRect.height * 0.5f + externalOffset.Horizontal
+            boundsRect.width * 0.5f + externalHorizontalOffset,
+            externalOffset.VerticalMeters,
+            boundsRect.height * 0.5f + externalHorizontalOffset
         );
 
         Vector3 internalExtents = new Vector3(
-            Mathf.Max(0, boundsRect.width * 0.5f - internalOffset.Horizontal),
-            Mathf.Max(0, internalOffset.Vertical),
-            Mathf.Max(0, boundsRect.height * 0.5f - internalOffset.Horizontal)
+            Mathf.Max(0, boundsRect.width * 0.5f - internalHorizontalOffset),
+            Mathf.Max(0, internalOffset.VerticalMeters),
+            Mathf.Max(0, boundsRect.height * 0.5f - internalHorizontalOffset)
         );
 
         // Start with local-aligned bounds
         externalBounds = new Bounds(Vector3.zero, extents * 2f);
         internalBounds = new Bounds(Vector3.zero, internalExtents * 2f);
-
-
     }
 
     public bool IsPointInZone(Vector3 worldPoint)
@@ -97,9 +98,8 @@ public class BoundingZoneChecker : MonoBehaviour
         Gizmos.matrix = oldMatrix;
     }
 
-    public void ShowDebugCubes()
+    private void CreateExternalDebugCube()
     {
-        HideDebugCubes(); // Ensure clean state
 
         externalCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
         externalCube.transform.SetParent(transform, false);
@@ -107,23 +107,57 @@ public class BoundingZoneChecker : MonoBehaviour
         externalCube.transform.localRotation = Quaternion.identity;
         externalCube.transform.localScale = externalBounds.size;
         externalCube.GetComponent<Renderer>().material = externalMaterial;
+        Destroy(externalCube.GetComponent<Collider>());
+    }
 
+    private void CreateInternalDebugCube()
+    {
         internalCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
         internalCube.transform.SetParent(transform, false);
         internalCube.transform.localPosition = Vector3.zero;
         internalCube.transform.localRotation = Quaternion.identity;
         internalCube.transform.localScale = internalBounds.size;
         internalCube.GetComponent<Renderer>().material = internalMaterial;
-
-        Destroy(externalCube.GetComponent<Collider>());
         Destroy(internalCube.GetComponent<Collider>());
+    }
+    
+    private void HideInternalCube()
+    {
+        if (internalCube != null) Destroy(internalCube);
+    }
+
+    private void HideExternalCube()
+    {
+        if (externalCube != null) Destroy(externalCube);
+    }
+
+    public void ShowOnlyInternalCube()
+    {
+        HideDebugCubes();
+        CreateInternalDebugCube();
+    }
+
+    public void ShowOnlyExternalCube()
+    {
+        HideDebugCubes();
+        CreateExternalDebugCube();
+    }
+
+    public void ShowBothDebugCubes()
+    {
+        HideDebugCubes(); // Ensure clean state
+
+        CreateExternalDebugCube();
+        CreateInternalDebugCube();
+
     }
 
     public void HideDebugCubes()
     {
-        if (externalCube != null) Destroy(externalCube);
-        if (internalCube != null) Destroy(internalCube);
+        HideExternalCube();
+        HideInternalCube();
     }
+
 
     #endregion
 }
