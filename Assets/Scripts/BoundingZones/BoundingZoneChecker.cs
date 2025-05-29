@@ -27,7 +27,8 @@ public class BoundingZoneChecker : MonoBehaviour
     private GameObject externalCube;
     private GameObject internalCube;
 
-    private LabelOffsetConfig.OffsetSet _defaultOffsetConfig = new() { HorizontalRatio = 1.2f, VerticalMeters = 0.2f };
+    private LabelOffsetConfig.ExternalOffset _defaultExternalOffset = new() { HorizontalRatio = 1.2f, VerticalMeters = 0.2f };
+    private LabelOffsetConfig.InternalOffset _defaultInternalOffset = new() { HorizontalRatio = 0.8f, VerticalMeters = 0.2f };
 
     public void Initialize(MRUKAnchor.SceneLabels labelID, string id, Rect boundsRect, LabelOffsetConfig offsetConfig, Material externalMaterial, Material internalMaterial)
     {
@@ -40,14 +41,14 @@ public class BoundingZoneChecker : MonoBehaviour
 
         SetupBounds();
     }
+
     private void SetupBounds()
     {
         var (externalOffset, internalOffset) = offsetConfig != null
             ? offsetConfig.GetOffsets(labelID)
-            : (_defaultOffsetConfig, _defaultOffsetConfig);
+            : (_defaultExternalOffset, _defaultInternalOffset);
 
         // Calculate horizontal offsets based on ratios
-
         Vector3 extents = new Vector3(
             boundsRect.width * externalOffset.HorizontalRatio,
             externalOffset.VerticalMeters,

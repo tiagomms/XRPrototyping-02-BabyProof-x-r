@@ -8,10 +8,22 @@ using Meta.XR.MRUtilityKit;
 public class LabelOffsetConfig : ScriptableObject
 {
     [Serializable]
-    public struct OffsetSet
+    public struct ExternalOffset
     {
-        [Tooltip("Horizontal offset as a ratio of the surface width/height. For external bounds: 1.0-1.5 (100%-150% of surface size). For internal bounds: 0.0-1.0 (0%-100% of surface size).")]
-        [Range(0f, 1.5f)]
+        [Tooltip("Horizontal offset as a ratio of the surface width/height. Must be between 1.0 and 1.5 (100%-150% of surface size) to create a safety margin around the surface.")]
+        [Range(1f, 1.5f)]
+        public float HorizontalRatio;
+
+        [Tooltip("Vertical offset in meters. Must be positive.")]
+        [Min(0f)]
+        public float VerticalMeters;
+    }
+
+    [Serializable]
+    public struct InternalOffset
+    {
+        [Tooltip("Horizontal offset as a ratio of the surface width/height. Must be between 0.0 and 1.0 (0%-100% of surface size) to create a hole inside the surface.")]
+        [Range(0f, 1f)]
         public float HorizontalRatio;
 
         [Tooltip("Vertical offset in meters. Must be positive.")]
@@ -24,22 +36,22 @@ public class LabelOffsetConfig : ScriptableObject
     {
         public MRUKAnchor.SceneLabels label;
         
-        [Tooltip("External offset configuration. HorizontalRatio should be between 1.0 and 1.5 to create a safety margin around the surface.")]
-        public OffsetSet ExternalOffset;
+        [Tooltip("External offset configuration for creating a safety margin around the surface.")]
+        public ExternalOffset ExternalOffset;
         
-        [Tooltip("Internal offset configuration. HorizontalRatio should be between 0.0 and 1.0 to create a hole inside the surface.")]
-        public OffsetSet InternalOffset;
+        [Tooltip("Internal offset configuration for creating a hole inside the surface.")]
+        public InternalOffset InternalOffset;
     }
 
     [SerializeField] private List<OffsetEntry> labelOffsets;
     
-    [Tooltip("Default external offset configuration. HorizontalRatio should be between 1.0 and 1.5 to create a safety margin around the surface.")]
-    [SerializeField] private OffsetSet defaultExternalOffset = new OffsetSet { HorizontalRatio = 1.2f, VerticalMeters = 0.2f };
+    [Tooltip("Default external offset configuration for creating a safety margin around the surface.")]
+    [SerializeField] private ExternalOffset defaultExternalOffset = new ExternalOffset { HorizontalRatio = 1.2f, VerticalMeters = 0.2f };
     
-    [Tooltip("Default internal offset configuration. HorizontalRatio should be between 0.0 and 1.0 to create a hole inside the surface.")]
-    [SerializeField] private OffsetSet defaultInternalOffset = new OffsetSet { HorizontalRatio = 0.8f, VerticalMeters = 0.2f };
+    [Tooltip("Default internal offset configuration for creating a hole inside the surface.")]
+    [SerializeField] private InternalOffset defaultInternalOffset = new InternalOffset { HorizontalRatio = 0.8f, VerticalMeters = 0.2f };
 
-    public (OffsetSet external, OffsetSet internalSet) GetOffsets(MRUKAnchor.SceneLabels label)
+    public (ExternalOffset external, InternalOffset internalSet) GetOffsets(MRUKAnchor.SceneLabels label)
     {
         foreach (OffsetEntry entry in labelOffsets)
         {
