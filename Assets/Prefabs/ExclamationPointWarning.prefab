@@ -222,7 +222,7 @@ GameObject:
   - component: {fileID: 4574841842361336106}
   - component: {fileID: 1661902021696998655}
   m_Layer: 0
-  m_Name: ExclamationPoint
+  m_Name: ExclamationPointWarning
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

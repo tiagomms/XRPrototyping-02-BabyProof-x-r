@@ -109,13 +109,12 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   hazardPrefabManager: {fileID: 3571336579663893556}
+  shouldDisplayBoxes: 0
   m_dangerousBoxColor: {r: 0.99215686, g: 0.76530504, b: 0.36078426, a: 0.60784316}
   m_dangerousFontColor: {r: 0.99215686, g: 0.7647059, b: 0.36078432, a: 1}
   chockingHazardMaxSize: 0.032
   m_chockingBoxColor: {r: 0.99215686, g: 0.41031057, b: 0.36078426, a: 0.60784316}
   m_chockingFontColor: {r: 0.99215686, g: 0.4117647, b: 0.36078432, a: 1}
-  m_testImageManager: {fileID: 0}
-  m_debugCamera: {fileID: 0}
 --- !u!114 &3571336579663893556
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -128,8 +127,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee8a4cc8bcb6a2d48bfda71e9339b857, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dangerousPrefab: {fileID: 7166376608709615182, guid: 1137c384f84213d49bd946a82f76840f, type: 3}
-  chokingPrefab: {fileID: 8969250706746887371, guid: 472c0f8e8a46e274db61255de9d79cf5, type: 3}
+  regularPrefab: {fileID: 8969250706746887371, guid: 472c0f8e8a46e274db61255de9d79cf5, type: 3}
+  dangerousPrefab: {fileID: 7166376608709615182, guid: 0acae65f13afac54d98e2f848cfc82cf, type: 3}
+  chokingPrefab: {fileID: 7166376608709615182, guid: 1137c384f84213d49bd946a82f76840f, type: 3}
   matchThreshold: 0.3
   minMovementThreshold: 0.02
   yOffset: 0.1
@@ -160,6 +160,11 @@ MonoBehaviour:
   m_scoreThreshold: 0.37
   m_babyProofxrUiInference: {fileID: 1424424383851876144}
   m_dangerousLabelAssets: {fileID: 4900000, guid: b44332fe80870b3479268f6d5c7fcfb6, type: 3}
+  chockingHazardMaxSize: 0.032
+  boundingDangerZonesManager: {fileID: 0}
+  debugImgResolution: {x: 1280, y: 960}
+  m_testImageManager: {fileID: 0}
+  m_debugCamera: {fileID: 0}
 --- !u!114 &6370972597686496941 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4976470222712890361, guid: 927c1b782bb796b4b9b433d533cbccca, type: 3}

@@ -64,7 +64,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: dae2d69d446041544b690a485c17a0d0, type: 2}
+  - {fileID: 2100000, guid: c88a1ee3e5582c247927a40cb8035b12, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -458,7 +458,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: dae2d69d446041544b690a485c17a0d0, type: 2}
+  - {fileID: 2100000, guid: c88a1ee3e5582c247927a40cb8035b12, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -602,7 +602,7 @@ GameObject:
   - component: {fileID: 4650047245202254071}
   - component: {fileID: 5697221991463807497}
   m_Layer: 0
-  m_Name: question_3d_icon-summer57
+  m_Name: QuestionMarkWarning
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
