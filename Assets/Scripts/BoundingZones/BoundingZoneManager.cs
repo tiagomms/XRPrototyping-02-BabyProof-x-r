@@ -14,6 +14,7 @@ public class BoundingZoneManager : MonoBehaviour
     [SerializeField] private Material defaultExternalMaterial;
     [SerializeField] private Material defaultInternalMaterial;
 
+    public bool IsInitialized { get; private set; }
 
     private List<BoundingZoneChecker> allZones = new List<BoundingZoneChecker>();
     public List<BoundingZoneChecker> AllZones => allZones;
@@ -40,6 +41,7 @@ public class BoundingZoneManager : MonoBehaviour
         }
 
         SetupBoundingZones(_mruk.GetCurrentRoom().Anchors);
+        IsInitialized = true;
 
     }
 
@@ -110,7 +112,7 @@ public class BoundingZoneManager : MonoBehaviour
         XRDebugLogViewer.Log($"{labelID} - AnchorPosition {anchor.transform.position} - Rect {boundsRect}");
         string objName = $"Zone_{labelID}_{allZones.Count}";
         GameObject zoneObj = new GameObject(objName);
-        
+
         // FIXME: anchors tend to be mostly flat on the XZ axis, so I assume this. In the future, take a better look
         Quaternion planeAngle = Quaternion.Euler(0f, anchor.transform.eulerAngles.y, 0f);
         zoneObj.transform.SetPositionAndRotation(anchor.transform.position, planeAngle);
@@ -147,12 +149,15 @@ public class BoundingZoneManager : MonoBehaviour
     /// </summary>
     public bool TryGetZone(Vector3 point, out BoundingZoneChecker matchingZone)
     {
-        foreach (var zone in allZones)
+        if (IsInitialized)
         {
-            if (zone.IsPointInZone(point))
+            foreach (var zone in allZones)
             {
-                matchingZone = zone;
-                return true;
+                if (zone.IsPointInZone(point))
+                {
+                    matchingZone = zone;
+                    return true;
+                }
             }
         }
         matchingZone = null;

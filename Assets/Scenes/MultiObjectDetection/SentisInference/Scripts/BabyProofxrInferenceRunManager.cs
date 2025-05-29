@@ -19,10 +19,11 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         [Header("BabyProofxr filter")]
         [SerializeField] protected TextAsset m_dangerousLabelAssets;
         [SerializeField] private float chockingHazardMaxSize = 0.032f;
+        [SerializeField] private BoundingZoneManager boundingDangerZonesManager;
 
         [Space(40)]
         [Header("Debug")]
-        [SerializeField] private Vector2Int debugImgResolution = new(1280,960);
+        [SerializeField] private Vector2Int debugImgResolution = new(1280, 960);
         [SerializeField] protected TestImageManager m_testImageManager;
         [SerializeField] protected Camera m_debugCamera;
 
@@ -42,7 +43,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
 
             m_babyProofxrUiInference.SetLabels(m_labelsAsset, m_dangerousLabelAssets);
             m_labels = m_labelsAsset.text.Split('\n');
-            
+
             // Initialize the filter
             var dangerousLabelDict = new Dictionary<int, string>();
             var dangerousLabelsSplit = m_dangerousLabelAssets.text.Split('\n');
@@ -60,7 +61,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                 Debug.LogWarning($"[{nameof(BabyProofxrInferenceRunManager)} - Play mode testing not possible. Needs a debug camera and TestImageManager]");
             }
 
-            m_filter = new BabyProofxrFilter(chockingHazardMaxSize, dangerousLabelDict, m_testImageManager, m_debugCamera);
+            m_filter = new BabyProofxrFilter(chockingHazardMaxSize, dangerousLabelDict, boundingDangerZonesManager, m_testImageManager, m_debugCamera);
 
             LoadModel();
         }
@@ -129,33 +130,32 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                     }
                     break;
                 case 3:
-                    if (!m_isWaiting)
-                    {
-                        // Get camera resolution
-                        Vector2Int camRes;
-#if !UNITY_EDITOR
-                        var intrinsics = PassthroughCameraUtils.GetCameraIntrinsics(CameraEye);
-                        camRes = intrinsics.Resolution;
-#else
-                        camRes = debugImgResolution;
-#endif
-                        // Filter the results
-                        var filteredBoxes = m_filter.FilterResults(
-                            m_output,
-                            m_labelIDs,
-                            m_labels,
-                            m_babyProofxrUiInference.DisplayWidth,
-                            m_babyProofxrUiInference.DisplayHeight,
-                            m_inputSize.x,
-                            m_inputSize.y,
-                            camRes,
-                            m_babyProofxrUiInference.EnvironmentRaycast
-                        );
 
-                        // Update UI with filtered results
-                        m_babyProofxrUiInference.ProcessFilteredEntries(filteredBoxes);
-                        m_download_state = 5;
-                    }
+                    // Get camera resolution
+                    Vector2Int camRes;
+#if !UNITY_EDITOR
+                    var intrinsics = PassthroughCameraUtils.GetCameraIntrinsics(CameraEye);
+                    camRes = intrinsics.Resolution;
+#else
+                    camRes = debugImgResolution;
+#endif
+                    // Filter the results
+                    var filteredBoxes = m_filter.FilterResults(
+                        m_output,
+                        m_labelIDs,
+                        m_labels,
+                        m_babyProofxrUiInference.DisplayWidth,
+                        m_babyProofxrUiInference.DisplayHeight,
+                        m_inputSize.x,
+                        m_inputSize.y,
+                        camRes,
+                        m_babyProofxrUiInference.EnvironmentRaycast
+                    );
+
+                    // Update UI with filtered results
+                    m_babyProofxrUiInference.ProcessFilteredEntries(filteredBoxes);
+                    m_download_state = 5;
+
                     break;
                 case 4:
                     m_babyProofxrUiInference.OnObjectDetectionError();

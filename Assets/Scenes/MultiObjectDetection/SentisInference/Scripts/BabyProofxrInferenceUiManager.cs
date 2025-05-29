@@ -82,16 +82,15 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         /// </summary>
         public void ProcessFilteredEntries(List<BabyProofBoundingBox> filteredBoxes)
         {
-            // Update canvas position
-            m_detectionCanvas.UpdatePosition();
-
-            // Clear current boxes
-            ClearAnnotations();
-
+            
             OnObjectsDetected?.Invoke(filteredBoxes.Count);
             
             if (shouldDisplayBoxes)
             {
+                // Update canvas position
+                m_detectionCanvas.UpdatePosition();
+                // Clear current boxes
+                ClearAnnotations();
                 DrawUIBoxes(filteredBoxes);
             }
 

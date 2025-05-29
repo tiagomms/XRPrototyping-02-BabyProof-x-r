@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Mono.Cecil.Cil;
 using UnityEngine;
 
 namespace PassthroughCameraSamples.MultiObjectDetection
@@ -10,6 +11,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
     {
         private readonly float chockingHazardMaxSize;
         private readonly Dictionary<int, string> dangerousLabelDict;
+        private readonly BoundingZoneManager boundingDangerZoneManager;
 
         [Header("Debug purposes")]
         private readonly TestImageManager testImageManager;
@@ -18,12 +20,14 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         public BabyProofxrFilter(
             float chockingHazardMaxSize, 
             Dictionary<int, string> dangerousLabelDict,
+            BoundingZoneManager boundingDangerZoneManager,
             TestImageManager testImageManager,
             Camera debugCamera
         )
         {
             this.chockingHazardMaxSize = chockingHazardMaxSize;
             this.dangerousLabelDict = dangerousLabelDict;
+            this.boundingDangerZoneManager = boundingDangerZoneManager;
             this.testImageManager = testImageManager;
             this.debugCamera = debugCamera;
         }
@@ -52,18 +56,18 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             Vector2Int camRes,
             EnvironmentRayCastSampleManager environmentRaycast)
         {
+            List<BabyProofxrInferenceUiManager.BabyProofBoundingBox> filteredBoxes = new();
+
             var boxesFound = output.shape[0];
-            if (boxesFound <= 0)
+            if (boxesFound <= 0 || !boundingDangerZoneManager.IsInitialized)
             {
-                return new List<BabyProofxrInferenceUiManager.BabyProofBoundingBox>();
+                return filteredBoxes;
             }
 
             var scaleX = displayWidth / imageWidth;
             var scaleY = displayHeight / imageHeight;
             var halfWidth = displayWidth / 2;
             var halfHeight = displayHeight / 2;
-
-            List<BabyProofxrInferenceUiManager.BabyProofBoundingBox> filteredBoxes = new();
 
             for (var n = 0; n < boxesFound; n++)
             {
@@ -86,19 +90,18 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                     camRes, environmentRaycast,
                     (Vector3)centerWorldPos);
 
-                // Check if object is a chocking hazard
-                bool isChockingHazard = IsChockingHazard(surroundBoxWorldDistance);
-
-                // Check if object is in dangerous objects list
-                bool isDangerousObject = dangerousLabelDict.ContainsKey(labelIDs[n]);
-
+                bool isObjectInDangerZone = boundingDangerZoneManager.TryGetZone((Vector3)centerWorldPos, out var matchingZone);
                 // Skip if object is neither dangerous nor a chocking hazard
-                if (!isDangerousObject && !isChockingHazard)
+                if (!isObjectInDangerZone)
                 {
                     continue;
                 }
 
                 string label = labels[labelIDs[n]].Trim().Replace(" ", "_").Replace("\n", "_").Replace("\r", "_").Replace("\t", "_");
+                // Check if object is a chocking hazard
+                bool isChockingHazard = IsChockingHazard(surroundBoxWorldDistance);
+                // Check if object is in dangerous objects list
+                bool isDangerousObject = dangerousLabelDict.ContainsKey(labelIDs[n]);
 
                 // Create bounding box
                 var box = new BabyProofxrInferenceUiManager.BabyProofBoundingBox
