@@ -25,7 +25,7 @@ MonoBehaviour:
       HorizontalRatio: 1.2
       VerticalMeters: 0.4
     InternalOffset:
-      HorizontalRatio: 0.8
+      HorizontalRatio: 0.6
       VerticalMeters: 0.45
   - label: 16
     ExternalOffset:
@@ -38,5 +38,5 @@ MonoBehaviour:
     HorizontalRatio: 1.2
     VerticalMeters: 0.3
   defaultInternalOffset:
-    HorizontalRatio: 0.8
+    HorizontalRatio: 0.6
     VerticalMeters: 0.35
