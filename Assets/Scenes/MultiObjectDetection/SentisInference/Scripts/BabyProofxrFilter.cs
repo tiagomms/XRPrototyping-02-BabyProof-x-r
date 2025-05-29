@@ -13,6 +13,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
 
         private readonly float chockingHazardMaxSize;
         private readonly Dictionary<int, string> dangerousLabelDict;
+        private readonly Dictionary<int, string> ignoreLabelDict;
         private readonly BoundingZoneManager boundingDangerZoneManager;
 
         private PassthroughCameraEye cameraEye;
@@ -27,6 +28,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         public BabyProofxrFilter(
             float chockingHazardMaxSize, 
             Dictionary<int, string> dangerousLabelDict,
+            Dictionary<int, string> ignoreLabelDict,
             BoundingZoneManager boundingDangerZoneManager,
             PassthroughCameraEye cameraEye,
             TestImageManager testImageManager,
@@ -35,6 +37,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         {
             this.chockingHazardMaxSize = chockingHazardMaxSize;
             this.dangerousLabelDict = dangerousLabelDict;
+            this.ignoreLabelDict = ignoreLabelDict;
             this.boundingDangerZoneManager = boundingDangerZoneManager;
             this.testImageManager = testImageManager;
             this.debugCamera = debugCamera;
@@ -89,6 +92,12 @@ namespace PassthroughCameraSamples.MultiObjectDetection
 
             for (var n = 0; n < boxesFound; n++)
             {
+                // Skip if the label is in the ignore dictionary
+                if (ignoreLabelDict.ContainsKey(labelIDs[n]))
+                {
+                    continue;
+                }
+
                 // Get bounding box center coordinates
                 var centerX = output[n, 0] * scaleX - halfWidth;
                 var centerY = output[n, 1] * scaleY - halfHeight;

@@ -29,7 +29,7 @@ In addition to this, I can tell my partner and my baby that I am working on impo
 - Camera access and environment raycasting
 - Object filtering based on dangerous labels
 - Scene anchor detection and labeling
-- Camera access does not work on Oculus Link, so I had to create a way of avoiding it and still test Unity Sentis. Built a simulation that runs a set of images that on Unity Sentis and change every x seconds. It was a child of the camera, so I could move the 
+- Camera access does not work on Oculus Link, so I had to create a way of avoiding it and still test Unity Sentis. Built a simulation that runs a set of images that on Unity Sentis and change every x seconds. It was a child of the camera, so I could move the images to the areas where scene understanding considered ok.
 
 ## Project Structure
 Assets/

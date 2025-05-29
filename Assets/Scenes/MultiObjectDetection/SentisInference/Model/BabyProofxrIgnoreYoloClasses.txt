@@ -1,0 +1,35 @@
+person
+bicycle
+car
+motorbike
+aeroplane
+bus
+train
+truck
+boat
+traffic light
+fire hydrant
+stop sign
+parking meter
+bench
+bird
+cat
+dog
+horse
+sheep
+cow
+elephant
+bear
+zebra
+giraffe
+chair
+sofa
+diningtable
+toilet
+microwave
+oven
+sink
+refrigerator
+clock
+teddy bear
+toothbrush

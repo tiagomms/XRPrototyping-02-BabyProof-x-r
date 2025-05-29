@@ -18253,7 +18253,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5518670934586006478, guid: 8f403dcd176949148ab24331defe47fb, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 217.00014
+      value: 217
       objectReference: {fileID: 0}
     - target: {fileID: 6204767134508456339, guid: 8f403dcd176949148ab24331defe47fb, type: 3}
       propertyPath: m_AnchorMax.y
@@ -23913,6 +23913,10 @@ PrefabInstance:
       propertyPath: m_testImageManager
       value: 
       objectReference: {fileID: 5199118718383990727}
+    - target: {fileID: 2622863369072514385, guid: a8b3a68ba5dda50428e0ec6bb7fc9442, type: 3}
+      propertyPath: m_ignoreLabelAssets
+      value: 
+      objectReference: {fileID: 4900000, guid: 22e19ca54a624e646b45b9c2dad216c9, type: 3}
     - target: {fileID: 2622863369072514385, guid: a8b3a68ba5dda50428e0ec6bb7fc9442, type: 3}
       propertyPath: m_webCamTextureManager
       value: 

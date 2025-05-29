@@ -5,3 +5,4 @@ fork
 knife
 vase
 scissors
+pottedplant

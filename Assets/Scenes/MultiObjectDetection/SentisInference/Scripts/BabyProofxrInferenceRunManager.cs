@@ -19,6 +19,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
 
         [Header("BabyProofxr filter")]
         [SerializeField] protected TextAsset m_dangerousLabelAssets;
+        [SerializeField] protected TextAsset m_ignoreLabelAssets;
         [SerializeField] private float chockingHazardMaxSize = 0.032f;
         [SerializeField] private BoundingZoneManager boundingDangerZonesManager;
         [SerializeField] protected WebCamTextureManager m_webCamTextureManager;
@@ -39,6 +40,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         public BabyProofxrFilter InferenceFilter {get; private set;}
         private string[] m_labels;
         private List<BabyProofxrInferenceUiManager.BabyProofBoundingBox> filteredBoxes = new();
+        private Dictionary<int, string> m_ignoreLabelDict;
 
         #endregion
 
@@ -63,12 +65,27 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                 }
             }
 
+            // Initialize ignore labels dictionary
+            m_ignoreLabelDict = new Dictionary<int, string>();
+            if (m_ignoreLabelAssets != null)
+            {
+                var ignoreLabelsSplit = m_ignoreLabelAssets.text.Split('\n');
+                foreach (string ignoreLabel in ignoreLabelsSplit)
+                {
+                    int mlClassificationIndex = Array.IndexOf(m_labels, ignoreLabel);
+                    if (mlClassificationIndex >= 0)
+                    {
+                        m_ignoreLabelDict.Add(mlClassificationIndex, ignoreLabel);
+                    }
+                }
+            }
+
             if (m_testImageManager == null || m_debugCamera == null)
             {
                 Debug.LogWarning($"[{nameof(BabyProofxrInferenceRunManager)} - Play mode testing not possible. Needs a debug camera and TestImageManager]");
             }
 
-            InferenceFilter = new BabyProofxrFilter(chockingHazardMaxSize, dangerousLabelDict, boundingDangerZonesManager, CameraEye, m_testImageManager, m_debugCamera);
+            InferenceFilter = new BabyProofxrFilter(chockingHazardMaxSize, dangerousLabelDict, m_ignoreLabelDict, boundingDangerZonesManager, CameraEye, m_testImageManager, m_debugCamera);
             toggleFilterAction.action.started += AdjustInferenceFilter;
 
             LoadModel();
