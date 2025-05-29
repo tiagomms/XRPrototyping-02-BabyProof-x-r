@@ -1,8 +1,8 @@
 # BabyProofXR - XR Object Detection and Scene Understanding Prototype
 
 ## Quick Links 🔗
-## 🎥 Watch Demo Video
-## 📱 Download APK
+## 🎥 [Watch Demo Video](https://drive.google.com/file/d/1aU9OYlAb_z5OmiX8clfsm6wi6I74qJLe/view?usp=drive_link)
+## 📱 [Download APK](https://drive.google.com/file/d/1CVoA_bwxz7JGS89kzdAMkReVcJxWQTKv/view?usp=drive_link)
 
 ## Overview 🎯
 This project is the second one-week solo prototype developed for the XR Bootcamp XR Prototyping course (May-July 2025). 
@@ -109,6 +109,13 @@ Assets/
 
 ## Contributing
 This is a prototype project. While contributions are welcome, please note that this is primarily a learning exercise and may not be actively maintained.
+
+## Contributions/Assets Used
+
+This project utilizes the following third-party assets:
+
+- [Question 3D icon](https://sketchfab.com/3d-models/question-3d-icon-ba8c685715a849fab6f289a2469d1567)
+- [Exclamation Point](https://sketchfab.com/3d-models/exclamation-point-8161d30cfabe446dae1fabfb920b0f58)
 
 ## License
 MIT License
