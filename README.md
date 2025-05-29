@@ -1,7 +1,17 @@
 # BabyProofXR - XR Object Detection and Scene Understanding Prototype
 
-## Overview
-BabyProofXR is a prototype that combines object detection with scene understanding to identify potentially dangerous objects to avoid toddlers getting hurt. The project integrates Unity Sentis for object detection with Meta's Scene Understanding (MRUK) to create a more contextual awareness of the environment.
+## Quick Links 🔗
+## 🎥 Watch Demo Video
+## 📱 Download APK
+
+## Overview 🎯
+This project is the second one-week solo prototype developed for the XR Bootcamp XR Prototyping course (May-July 2025). 
+
+I wanted parents of toddlers coming to new locations (or in their own homes) to know what areas they need to be more careful and what sort of easy adjustments they can do - that don't involve buying stuff. Since toddlers have a tendency to go about anywhere dangerous, it seemed an interesting challenge. For this first prototype, I am focusing on eminent danger (objects around that are hazardous) and in danger locations.
+
+Again, in XR with camera access + AI we can start doing this sort of analysis.
+
+In addition to this, I can tell my partner and my baby that I am working on important stuff. 😎
 
 ## Tech Stack
 - **Unity**: 6000.0.39f1
@@ -13,12 +23,13 @@ BabyProofXR is a prototype that combines object detection with scene understandi
   - Unity Sentis
   - YoloV8 for object detection
 
-## Key Features
+## Core Features
 - Real-time object detection using Unity Sentis and YoloV8
 - Integration with Meta's Scene Understanding (MRUK)
 - Camera access and environment raycasting
 - Object filtering based on dangerous labels
 - Scene anchor detection and labeling
+- Camera access does not work on Oculus Link, so I had to create a way of avoiding it and still test Unity Sentis. Built a simulation that runs a set of images that on Unity Sentis and change every x seconds. It was a child of the camera, so I could move the 
 
 ## Project Structure
 Assets/
