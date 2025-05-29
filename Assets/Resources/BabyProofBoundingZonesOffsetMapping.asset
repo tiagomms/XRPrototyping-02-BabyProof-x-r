@@ -15,28 +15,28 @@ MonoBehaviour:
   labelOffsets:
   - label: 1
     ExternalOffset:
-      Horizontal: 0.2
-      Vertical: 0.2
+      HorizontalRatio: 1.1
+      VerticalMeters: 0.5
     InternalOffset:
-      Horizontal: 0
-      Vertical: 0
+      HorizontalRatio: 0
+      VerticalMeters: 0
   - label: 8
     ExternalOffset:
-      Horizontal: 0.2
-      Vertical: 0.2
+      HorizontalRatio: 1.2
+      VerticalMeters: 0.4
     InternalOffset:
-      Horizontal: 0.2
-      Vertical: 0.2
+      HorizontalRatio: 0.6
+      VerticalMeters: 0.45
   - label: 16
     ExternalOffset:
-      Horizontal: 0.2
-      Vertical: 0.2
+      HorizontalRatio: 1.1
+      VerticalMeters: 1
     InternalOffset:
-      Horizontal: 0.2
-      Vertical: 0
+      HorizontalRatio: 0
+      VerticalMeters: 0
   defaultExternalOffset:
-    Horizontal: 0.2
-    Vertical: 0.2
+    HorizontalRatio: 1.2
+    VerticalMeters: 0.3
   defaultInternalOffset:
-    Horizontal: 0.2
-    Vertical: 0.2
+    HorizontalRatio: 0.6
+    VerticalMeters: 0.35

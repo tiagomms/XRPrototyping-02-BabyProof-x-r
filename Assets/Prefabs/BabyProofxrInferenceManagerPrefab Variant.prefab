@@ -59,14 +59,14 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 5228241647023865434, guid: 927c1b782bb796b4b9b433d533cbccca, type: 3}
-      insertIndex: -1
+      insertIndex: 1
+      addedObject: {fileID: 2622863369072514385}
+    - targetCorrespondingSourceObject: {fileID: 5228241647023865434, guid: 927c1b782bb796b4b9b433d533cbccca, type: 3}
+      insertIndex: 2
       addedObject: {fileID: 1424424383851876144}
     - targetCorrespondingSourceObject: {fileID: 5228241647023865434, guid: 927c1b782bb796b4b9b433d533cbccca, type: 3}
-      insertIndex: -1
+      insertIndex: 3
       addedObject: {fileID: 3571336579663893556}
-    - targetCorrespondingSourceObject: {fileID: 5228241647023865434, guid: 927c1b782bb796b4b9b433d533cbccca, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2622863369072514385}
   m_SourcePrefab: {fileID: 100100000, guid: 927c1b782bb796b4b9b433d533cbccca, type: 3}
 --- !u!114 &2061006717274769467 stripped
 MonoBehaviour:
@@ -84,6 +84,36 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 5228241647023865434, guid: 927c1b782bb796b4b9b433d533cbccca, type: 3}
   m_PrefabInstance: {fileID: 2118315389254733140}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2622863369072514385
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6191242826505204494}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c52e513b8c34a7498842cd0a55a5ba8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_inputSize: {x: 640, y: 640}
+  m_backend: 512
+  m_sentisModel: {fileID: 5022602860645237092, guid: 69ab50aef18ae412cac4b305492d527c, type: 3}
+  m_layersPerFrame: 39
+  m_labelsAsset: {fileID: 4900000, guid: c01c64149c7930b45a76559caabd5c78, type: 3}
+  m_uiInference: {fileID: 1424424383851876144}
+  OnnxModel: {fileID: 5022602860645237092, guid: e61826a46beb24bb380fd628c56eacaa, type: 3}
+  m_iouThreshold: 0.57
+  m_scoreThreshold: 0.37
+  m_babyProofxrUiInference: {fileID: 1424424383851876144}
+  m_dangerousLabelAssets: {fileID: 4900000, guid: b44332fe80870b3479268f6d5c7fcfb6, type: 3}
+  chockingHazardMaxSize: 0.032
+  boundingDangerZonesManager: {fileID: 0}
+  m_webCamTextureManager: {fileID: 0}
+  toggleFilterAction: {fileID: -7471211009204490832, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  debugImgResolution: {x: 1280, y: 960}
+  m_testImageManager: {fileID: 0}
+  m_debugCamera: {fileID: 0}
 --- !u!114 &1424424383851876144
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -109,13 +139,12 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   hazardPrefabManager: {fileID: 3571336579663893556}
+  shouldDisplayBoxes: 0
   m_dangerousBoxColor: {r: 0.99215686, g: 0.76530504, b: 0.36078426, a: 0.60784316}
   m_dangerousFontColor: {r: 0.99215686, g: 0.7647059, b: 0.36078432, a: 1}
   chockingHazardMaxSize: 0.032
   m_chockingBoxColor: {r: 0.99215686, g: 0.41031057, b: 0.36078426, a: 0.60784316}
   m_chockingFontColor: {r: 0.99215686, g: 0.4117647, b: 0.36078432, a: 1}
-  m_testImageManager: {fileID: 0}
-  m_debugCamera: {fileID: 0}
 --- !u!114 &3571336579663893556
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -128,38 +157,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee8a4cc8bcb6a2d48bfda71e9339b857, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dangerousPrefab: {fileID: 7166376608709615182, guid: 1137c384f84213d49bd946a82f76840f, type: 3}
-  chokingPrefab: {fileID: 8969250706746887371, guid: 472c0f8e8a46e274db61255de9d79cf5, type: 3}
+  regularPrefab: {fileID: 8969250706746887371, guid: 472c0f8e8a46e274db61255de9d79cf5, type: 3}
+  dangerousPrefab: {fileID: 7166376608709615182, guid: 0acae65f13afac54d98e2f848cfc82cf, type: 3}
+  chokingPrefab: {fileID: 7166376608709615182, guid: 1137c384f84213d49bd946a82f76840f, type: 3}
   matchThreshold: 0.3
   minMovementThreshold: 0.02
   yOffset: 0.1
   lerpSpeed: 20
-  maxFramesUnmatched: 5
+  maxFramesUnmatched: 3
   spawnScaleDuration: 0.3
   destroyScaleDuration: 0.2
---- !u!114 &2622863369072514385
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6191242826505204494}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2c52e513b8c34a7498842cd0a55a5ba8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_inputSize: {x: 640, y: 640}
-  m_backend: 512
-  m_sentisModel: {fileID: 5022602860645237092, guid: 69ab50aef18ae412cac4b305492d527c, type: 3}
-  m_layersPerFrame: 39
-  m_labelsAsset: {fileID: 4900000, guid: c01c64149c7930b45a76559caabd5c78, type: 3}
-  m_uiInference: {fileID: 1424424383851876144}
-  OnnxModel: {fileID: 5022602860645237092, guid: e61826a46beb24bb380fd628c56eacaa, type: 3}
-  m_iouThreshold: 0.57
-  m_scoreThreshold: 0.37
-  m_babyProofxrUiInference: {fileID: 1424424383851876144}
-  m_dangerousLabelAssets: {fileID: 4900000, guid: b44332fe80870b3479268f6d5c7fcfb6, type: 3}
 --- !u!114 &6370972597686496941 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4976470222712890361, guid: 927c1b782bb796b4b9b433d533cbccca, type: 3}

@@ -14,13 +14,21 @@ public class BoundingZoneManager : MonoBehaviour
     [SerializeField] private Material defaultExternalMaterial;
     [SerializeField] private Material defaultInternalMaterial;
 
+    public bool IsInitialized { get; private set; }
 
     private List<BoundingZoneChecker> allZones = new List<BoundingZoneChecker>();
     public List<BoundingZoneChecker> AllZones => allZones;
     private MRUK _mruk;
 
-    private bool isDebugModeOn = false;
+    public enum DebugState
+    {
+        None = 0,
+        ShowInternal = 1,
+        ShowExternal = 2,
+        ShowBoth = 3
+    }
 
+    private DebugState _debugState = DebugState.None;
 
     public void Initialize()
     {
@@ -40,6 +48,7 @@ public class BoundingZoneManager : MonoBehaviour
         }
 
         SetupBoundingZones(_mruk.GetCurrentRoom().Anchors);
+        IsInitialized = true;
 
     }
 
@@ -53,19 +62,6 @@ public class BoundingZoneManager : MonoBehaviour
         debugButton.action.started -= ToggleDebugMode;
     }
 
-    private void ToggleDebugMode(InputAction.CallbackContext context)
-    {
-        if (!_mruk) return;
-
-        if (!isDebugModeOn)
-        {
-            ShowDebugBoundingZones();
-        }
-        else
-        {
-            HideDebugBoundingZones();
-        }
-    }
 
     public void SetupBoundingZones(List<MRUKAnchor> anchors)
     {
@@ -110,7 +106,7 @@ public class BoundingZoneManager : MonoBehaviour
         XRDebugLogViewer.Log($"{labelID} - AnchorPosition {anchor.transform.position} - Rect {boundsRect}");
         string objName = $"Zone_{labelID}_{allZones.Count}";
         GameObject zoneObj = new GameObject(objName);
-        
+
         // FIXME: anchors tend to be mostly flat on the XZ axis, so I assume this. In the future, take a better look
         Quaternion planeAngle = Quaternion.Euler(0f, anchor.transform.eulerAngles.y, 0f);
         zoneObj.transform.SetPositionAndRotation(anchor.transform.position, planeAngle);
@@ -124,35 +120,20 @@ public class BoundingZoneManager : MonoBehaviour
         return checker;
     }
 
-    public void ShowDebugBoundingZones()
-    {
-        foreach (var item in allZones)
-        {
-            item.ShowDebugCubes();
-        }
-        isDebugModeOn = true;
-    }
-
-    public void HideDebugBoundingZones()
-    {
-        foreach (var item in allZones)
-        {
-            item.HideDebugCubes();
-        }
-        isDebugModeOn = false;
-    }
-
     /// <summary>
     /// Returns the first zone label where the point is in range.
     /// </summary>
     public bool TryGetZone(Vector3 point, out BoundingZoneChecker matchingZone)
     {
-        foreach (var zone in allZones)
+        if (IsInitialized)
         {
-            if (zone.IsPointInZone(point))
+            foreach (var zone in allZones)
             {
-                matchingZone = zone;
-                return true;
+                if (zone.IsPointInZone(point))
+                {
+                    matchingZone = zone;
+                    return true;
+                }
             }
         }
         matchingZone = null;
@@ -173,5 +154,42 @@ public class BoundingZoneManager : MonoBehaviour
     public string GetZoneID(Vector3 point)
     {
         return TryGetZone(point, out var zone) ? zone.id : null;
+    }
+
+
+    
+    private void ToggleDebugMode(InputAction.CallbackContext context)
+    {
+        if (!_mruk) return;
+        var newState = (DebugState)(((int)_debugState + 1) % 4);
+
+        switch (newState)
+        {
+            case DebugState.None:
+                foreach (var item in allZones)
+                {
+                    item.HideDebugCubes();
+                }
+                break;
+            case DebugState.ShowInternal:
+                foreach (var item in allZones)
+                {
+                    item.ShowOnlyInternalCube();
+                }
+                break;
+            case DebugState.ShowExternal:
+                foreach (var item in allZones)
+                {
+                    item.ShowOnlyExternalCube();
+                }
+                break;
+            case DebugState.ShowBoth:
+                foreach (var item in allZones)
+                {
+                    item.ShowBothDebugCubes();
+                }
+                break;
+        }
+        _debugState = newState;
     }
 }

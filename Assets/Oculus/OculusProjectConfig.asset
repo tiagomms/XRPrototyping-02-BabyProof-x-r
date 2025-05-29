@@ -27,7 +27,7 @@ MonoBehaviour:
   virtualKeyboardSupport: 0
   colocationSessionSupport: 0
   sceneSupport: 2
-  boundaryVisibilitySupport: 0
+  boundaryVisibilitySupport: 2
   disableBackups: 1
   enableNSCConfig: 1
   securityXmlPath: 
@@ -41,7 +41,7 @@ MonoBehaviour:
   requiresSystemKeyboard: 0
   experimentalFeaturesEnabled: 0
   insightPassthroughEnabled: 0
-  _insightPassthroughSupport: 1
+  _insightPassthroughSupport: 2
   _processorFavor: 0
   systemSplashScreen: {fileID: 0}
   systemSplashScreenType: 0

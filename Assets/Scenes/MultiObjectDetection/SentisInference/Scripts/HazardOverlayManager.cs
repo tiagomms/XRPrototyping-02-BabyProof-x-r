@@ -9,7 +9,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
 {
     public class HazardOverlayManager : MonoBehaviour
     {
-        public enum HazardType { Dangerous, Choking }
+        public enum HazardType { Regular = 0, Dangerous = 1, Choking = 2 }
 
         [System.Serializable]
         public class HazardOverlay
@@ -20,7 +20,8 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             public HazardType type;
         }
 
-        [Header("Prefabs")]
+        [Header("Hazard Type Prefabs")]
+        public GameObject regularPrefab;
         public GameObject dangerousPrefab;
         public GameObject chokingPrefab;
 
@@ -47,7 +48,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                     continue;
 
                 Vector3 worldPos = box.BaseBox.WorldPos.Value + Vector3.up * yOffset;
-                HazardType type = box.IsDangerous ? HazardType.Dangerous : HazardType.Choking;
+                HazardType type = DetermineHazardType(box);
 
                 // Step 2: Try to find closest matching overlay of same type
                 HazardOverlay match = null;
@@ -81,7 +82,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                 }
 
                 // Step 3: No match found — create a new overlay
-                GameObject prefab = type == HazardType.Dangerous ? dangerousPrefab : chokingPrefab;
+                GameObject prefab = GetHazardPrefab(type);
                 GameObject obj = Instantiate(prefab, worldPos, Quaternion.identity);
                 obj.transform.localScale = Vector3.zero;
                 obj.transform.DOScale(Vector3.one, spawnScaleDuration).SetEase(Ease.OutBack);
@@ -121,6 +122,32 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                         .OnComplete(() => Destroy(toDestroy));
                 }
             }
+
+        }
+
+        public GameObject GetHazardPrefab(HazardType type)
+        {
+            if (type == HazardType.Dangerous)
+            {
+                return dangerousPrefab;
+            }
+            if (type == HazardType.Choking)
+            {
+                return chokingPrefab;
+            }
+            return regularPrefab;
+        }
+        private HazardType DetermineHazardType(BabyProofxrInferenceUiManager.BabyProofBoundingBox box)
+        {
+            if (box.IsDangerous)
+            {
+                return HazardType.Dangerous;
+            }
+            else if (box.IsChockingHazard)
+            {
+                return HazardType.Choking;
+            }
+            return HazardType.Regular;
         }
 
         private void UpdateLabel(GameObject overlayObject, BabyProofxrInferenceUiManager.BabyProofBoundingBox box)

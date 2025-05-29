@@ -1,5 +1,6 @@
 // Copyright (c) Meta Platforms, Inc. and affiliates.
 
+using System;
 using System.Collections;
 using Meta.XR.Samples;
 using UnityEngine;
@@ -17,6 +18,9 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         //[SerializeField] private OVRInput.RawButton m_actionButton = OVRInput.RawButton.A;
 
         [Header("Ui elements ref.")]
+        [SerializeField] private GameObject m_footerPanel;
+        [SerializeField] private Text m_footerFilterInfo;
+
         [SerializeField] private GameObject m_loadingPanel;
         [SerializeField] private GameObject m_initialPanel;
         [SerializeField] private GameObject m_noPermissionPanel;
@@ -44,6 +48,10 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             m_loadingPanel.SetActive(true);
             // Wait until Sentis model is loaded
             var sentisInference = FindFirstObjectByType<SentisInferenceRunManager>();
+            
+            BabyProofxrFilter.IsDangerZoneFilterOn += UpdateFilterInfo;
+            XRDebugLogViewer.Log($"[{nameof(DetectionUiMenuManager)}] - Subscribed to IsDangerZoneFilterOn event");
+            
             while (!sentisInference.IsModelLoaded)
             {
                 yield return null;
@@ -58,6 +66,19 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             {
                 OnNoPermissionMenu();
             }
+
+        }
+
+        private void OnDestroy()
+        {
+            BabyProofxrFilter.IsDangerZoneFilterOn -= UpdateFilterInfo;
+            XRDebugLogViewer.Log($"[{nameof(DetectionUiMenuManager)}] - Unsubscribed from IsDangerZoneFilterOn event");
+        }
+
+        private void UpdateFilterInfo(bool isFilterIgnored)
+        {
+            XRDebugLogViewer.Log($"[{nameof(DetectionUiMenuManager)}] - UpdateFilterInfo called with isFilterIgnored: {isFilterIgnored}");
+            m_footerFilterInfo.text = $"Danger Zone Filter On: {!isFilterIgnored}";
         }
 
         private void Update()
