@@ -82,6 +82,10 @@ public class XRDebugLogViewer : MonoBehaviour
             //logText.alignment = TextAlignmentOptions.TopLeft;
             //logText.enableWordWrapping = true;
         }
+        else
+        {
+            Debug.LogWarning($"[{nameof(XRDebugLogViewer)}] No TextMeshProUGUI serialized - will just drop Debug.Logs");
+        }
 
         // Initialize the scroll rect
         if (scrollRect != null)
@@ -89,6 +93,10 @@ public class XRDebugLogViewer : MonoBehaviour
             scrollRect.vertical = true;
             scrollRect.horizontal = false;
             scrollRect.scrollSensitivity = 20f;
+        }
+        else
+        {
+            Debug.LogWarning($"[{nameof(XRDebugLogViewer)}] No ScrollRect serialized - will not automatically show latest logs in TextMeshProUGUI");
         }
 
         ClearLogs();
@@ -184,6 +192,7 @@ public class XRDebugLogViewer : MonoBehaviour
 
     private void UpdateDisplay()
     {
+        if (!logText) return; //NOTE: to have the log working when there is no UI 
         // Debug: Log the text being set
         string displayText = string.Join("\n", logLines);
         //Debug.Log($"[XRDebugLogViewer] Setting text to display:\n{displayText}");
@@ -191,6 +200,7 @@ public class XRDebugLogViewer : MonoBehaviour
         // Ensure the text is properly formatted with newlines
         logText.text = displayText;
 
+        if (!scrollRect) return;
         // Force Unity to update layout and scroll to bottom
         Canvas.ForceUpdateCanvases();
         scrollRect.verticalNormalizedPosition = 0;
