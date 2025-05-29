@@ -18253,7 +18253,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5518670934586006478, guid: 8f403dcd176949148ab24331defe47fb, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 217
+      value: 217.00014
       objectReference: {fileID: 0}
     - target: {fileID: 6204767134508456339, guid: 8f403dcd176949148ab24331defe47fb, type: 3}
       propertyPath: m_AnchorMax.y
@@ -23788,58 +23788,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1744462753}
     m_Modifications:
-    - target: {fileID: 4304867643667793, guid: 259c0c899b7e0c14aa431eefdc0aacc6, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 225161860600929460, guid: 259c0c899b7e0c14aa431eefdc0aacc6, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 538354901286188544, guid: 259c0c899b7e0c14aa431eefdc0aacc6, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1784151354240486895, guid: 259c0c899b7e0c14aa431eefdc0aacc6, type: 3}
-      propertyPath: m_Text
-      value: '-----------------------------------------------------------
-
-        <b>BABYPROOFxR
-        ERROR</b>
-
-        -----------------------------------------------------------'
-      objectReference: {fileID: 0}
-    - target: {fileID: 4386550124580111073, guid: 259c0c899b7e0c14aa431eefdc0aacc6, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5035866059478431671, guid: 259c0c899b7e0c14aa431eefdc0aacc6, type: 3}
-      propertyPath: m_Text
-      value: "Unity Sentis version: 2.1.2\nAI model: Yolo \nDetecting objects: 0\nObject
-        identified: 0"
-      objectReference: {fileID: 0}
-    - target: {fileID: 5185259287786992558, guid: 259c0c899b7e0c14aa431eefdc0aacc6, type: 3}
-      propertyPath: m_Text
-      value: '-----------------------------------------------------------
-
-        <b>BABYPROOFxR
-        LOADING</b>
-
-        -----------------------------------------------------------'
-      objectReference: {fileID: 0}
-    - target: {fileID: 5319885961176894441, guid: 259c0c899b7e0c14aa431eefdc0aacc6, type: 3}
-      propertyPath: m_Text
-      value: '-----------------------------------------------------------
-
-        <b>BABYPROOFxR
-        ACTIVATE</b>
-
-        -----------------------------------------------------------'
-      objectReference: {fileID: 0}
-    - target: {fileID: 5846769668076299689, guid: 259c0c899b7e0c14aa431eefdc0aacc6, type: 3}
-      propertyPath: m_actionButton
-      value: 
-      objectReference: {fileID: 1120369429361536294, guid: 052faaac586de48259a63d0c4782560b, type: 3}
     - target: {fileID: 5846769668076299689, guid: 259c0c899b7e0c14aa431eefdc0aacc6, type: 3}
       propertyPath: OnPause.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -23847,10 +23795,6 @@ PrefabInstance:
     - target: {fileID: 8722207748505512710, guid: 259c0c899b7e0c14aa431eefdc0aacc6, type: 3}
       propertyPath: m_Name
       value: DetectionUiMenuPrefab
-      objectReference: {fileID: 0}
-    - target: {fileID: 8722207748505512710, guid: 259c0c899b7e0c14aa431eefdc0aacc6, type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8722207748505512711, guid: 259c0c899b7e0c14aa431eefdc0aacc6, type: 3}
       propertyPath: m_Pivot.x
@@ -23950,14 +23894,6 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 1424424383851876144, guid: a8b3a68ba5dda50428e0ec6bb7fc9442, type: 3}
-      propertyPath: m_debugCamera
-      value: 
-      objectReference: {fileID: 1744462754}
-    - target: {fileID: 1424424383851876144, guid: a8b3a68ba5dda50428e0ec6bb7fc9442, type: 3}
-      propertyPath: m_testImageManager
-      value: 
-      objectReference: {fileID: 5199118718383990727}
-    - target: {fileID: 1424424383851876144, guid: a8b3a68ba5dda50428e0ec6bb7fc9442, type: 3}
       propertyPath: m_environmentRaycast
       value: 
       objectReference: {fileID: 1721288809}
@@ -23985,10 +23921,6 @@ PrefabInstance:
       propertyPath: boundingDangerZonesManager
       value: 
       objectReference: {fileID: 208890074}
-    - target: {fileID: 3571336579663893556, guid: a8b3a68ba5dda50428e0ec6bb7fc9442, type: 3}
-      propertyPath: maxFramesUnmatched
-      value: 3
-      objectReference: {fileID: 0}
     - target: {fileID: 6191242826505204494, guid: a8b3a68ba5dda50428e0ec6bb7fc9442, type: 3}
       propertyPath: m_Name
       value: BabyProofxrInferenceManagerPrefab

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,6 +9,8 @@ namespace PassthroughCameraSamples.MultiObjectDetection
     /// </summary>
     public class BabyProofxrFilter
     {
+        public bool IgnoreDangerZoneFilter {get; private set;}
+
         private readonly float chockingHazardMaxSize;
         private readonly Dictionary<int, string> dangerousLabelDict;
         private readonly BoundingZoneManager boundingDangerZoneManager;
@@ -17,6 +20,9 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         [Header("Debug purposes")]
         private readonly TestImageManager testImageManager;
         private readonly Camera debugCamera;
+
+        // to warn of potential code changes
+        public static event Action<bool> IsDangerZoneFilterOn;
 
         public BabyProofxrFilter(
             float chockingHazardMaxSize, 
@@ -33,6 +39,15 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             this.testImageManager = testImageManager;
             this.debugCamera = debugCamera;
             this.cameraEye = cameraEye;
+            XRDebugLogViewer.Log($"[{nameof(BabyProofxrFilter)}] - Constructor: Invoking IsDangerZoneFilterOn with value {IgnoreDangerZoneFilter}. Subscriber count: {IsDangerZoneFilterOn?.GetInvocationList().Length ?? 0}");
+            IsDangerZoneFilterOn?.Invoke(IgnoreDangerZoneFilter);
+        }
+
+        public void ToggleIgnoreDangerZoneFilter()
+        {
+            IgnoreDangerZoneFilter = !IgnoreDangerZoneFilter;
+            XRDebugLogViewer.Log($"[{nameof(BabyProofxrFilter)}] - ToggleIgnoreDangerZoneFilter: Invoking IsDangerZoneFilterOn with value {IgnoreDangerZoneFilter}. Subscriber count: {IsDangerZoneFilterOn?.GetInvocationList().Length ?? 0}");
+            IsDangerZoneFilterOn?.Invoke(IgnoreDangerZoneFilter);
         }
 
         /// <summary>
@@ -95,17 +110,19 @@ namespace PassthroughCameraSamples.MultiObjectDetection
 
                 bool isObjectInDangerZone = boundingDangerZoneManager.TryGetZone((Vector3)centerWorldPos, out var matchingZone);
                 // Skip if object is neither dangerous nor a chocking hazard
-                if (!isObjectInDangerZone)
+                if (!isObjectInDangerZone && !IgnoreDangerZoneFilter)
                 {
                     continue;
                 }
 
                 string label = labels[labelIDs[n]].Trim().Replace(" ", "_").Replace("\n", "_").Replace("\r", "_").Replace("\t", "_");
+
                 // Check if object is a chocking hazard
                 bool isChockingHazard = IsChockingHazard(surroundBoxWorldDistance);
                 // Check if object is in dangerous objects list
                 bool isDangerousObject = dangerousLabelDict.ContainsKey(labelIDs[n]);
 
+                XRDebugLogViewer.Log($"Object Found: {label}, Chocking {isChockingHazard}, Dangerous {isDangerousObject}");
                 // Create bounding box
                 var box = new BabyProofxrInferenceUiManager.BabyProofBoundingBox
                 {

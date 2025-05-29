@@ -7,6 +7,7 @@ using Meta.XR.Samples;
 using Unity.Sentis;
 using UnityEngine;
 using PassthroughCameraSamples.MultiObjectDetection;
+using UnityEngine.InputSystem;
 
 namespace PassthroughCameraSamples.MultiObjectDetection
 {
@@ -23,6 +24,9 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         [SerializeField] protected WebCamTextureManager m_webCamTextureManager;
         protected PassthroughCameraEye CameraEye => m_webCamTextureManager.Eye;
 
+        [Header("Inference Filter Setup")]
+        [SerializeField] private InputActionReference toggleFilterAction;
+
         [Space(40)]
         [Header("Debug")]
         [SerializeField] private Vector2Int debugImgResolution = new(1280, 960);
@@ -32,7 +36,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
 
         #region Babyproofxr private variables
         private bool m_isPartOfRiskObjects = false;
-        private BabyProofxrFilter m_filter;
+        public BabyProofxrFilter InferenceFilter {get; private set;}
         private string[] m_labels;
         private List<BabyProofxrInferenceUiManager.BabyProofBoundingBox> filteredBoxes = new();
 
@@ -64,9 +68,16 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                 Debug.LogWarning($"[{nameof(BabyProofxrInferenceRunManager)} - Play mode testing not possible. Needs a debug camera and TestImageManager]");
             }
 
-            m_filter = new BabyProofxrFilter(chockingHazardMaxSize, dangerousLabelDict, boundingDangerZonesManager, CameraEye, m_testImageManager, m_debugCamera);
+            InferenceFilter = new BabyProofxrFilter(chockingHazardMaxSize, dangerousLabelDict, boundingDangerZonesManager, CameraEye, m_testImageManager, m_debugCamera);
+            toggleFilterAction.action.started += AdjustInferenceFilter;
 
             LoadModel();
+        }
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            toggleFilterAction.action.started -= AdjustInferenceFilter;
         }
 
         #endregion
@@ -76,6 +87,12 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         #endregion
 
         #region Inference Functions
+
+        private void AdjustInferenceFilter(InputAction.CallbackContext context)
+        {
+            XRDebugLogViewer.Log($"[{nameof(BabyProofxrInferenceRunManager)}] - AdjustInferenceFilter");
+            InferenceFilter.ToggleIgnoreDangerZoneFilter();
+        }
 
         protected override void GetInferencesResults()
         {
@@ -144,7 +161,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                         camRes = debugImgResolution;
 #endif
                         // Filter the results
-                        filteredBoxes = m_filter.FilterResults(
+                        filteredBoxes = InferenceFilter.FilterResults(
                             m_output,
                             m_labelIDs,
                             m_labels,
@@ -162,6 +179,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                     {
                         // Update UI with filtered results
                         m_babyProofxrUiInference.ProcessFilteredEntries(filteredBoxes);
+                        m_isWaiting = false;
                         m_download_state = 5;
                     }
                     break;
@@ -172,6 +190,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                 case 5:
                     m_download_state++;
                     m_started = false;
+                    m_isWaiting = false;
 
                     filteredBoxes.Clear();
 

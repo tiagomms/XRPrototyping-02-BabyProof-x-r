@@ -47,24 +47,22 @@ public class BoundingZoneChecker : MonoBehaviour
             : (_defaultOffsetConfig, _defaultOffsetConfig);
 
         // Calculate horizontal offsets based on ratios
-        float externalHorizontalOffset = boundsRect.width * (externalOffset.HorizontalRatio - 1f);
-        float internalHorizontalOffset = boundsRect.width * internalOffset.HorizontalRatio;
 
         Vector3 extents = new Vector3(
-            boundsRect.width * 0.5f + externalHorizontalOffset,
+            boundsRect.width * externalOffset.HorizontalRatio,
             externalOffset.VerticalMeters,
-            boundsRect.height * 0.5f + externalHorizontalOffset
+            boundsRect.height * externalOffset.HorizontalRatio
         );
 
         Vector3 internalExtents = new Vector3(
-            Mathf.Max(0, boundsRect.width * 0.5f - internalHorizontalOffset),
+            Mathf.Max(0, boundsRect.width * internalOffset.HorizontalRatio),
             Mathf.Max(0, internalOffset.VerticalMeters),
-            Mathf.Max(0, boundsRect.height * 0.5f - internalHorizontalOffset)
+            Mathf.Max(0, boundsRect.height * internalOffset.HorizontalRatio)
         );
 
         // Start with local-aligned bounds
-        externalBounds = new Bounds(Vector3.zero, extents * 2f);
-        internalBounds = new Bounds(Vector3.zero, internalExtents * 2f);
+        externalBounds = new Bounds(Vector3.zero, extents);
+        internalBounds = new Bounds(Vector3.zero, internalExtents);
     }
 
     public bool IsPointInZone(Vector3 worldPoint)
