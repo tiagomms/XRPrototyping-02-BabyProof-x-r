@@ -21,6 +21,11 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         [SerializeField] private float chockingHazardMaxSize = 0.032f;
 
         [Space(40)]
+        [Header("Debug")]
+        [SerializeField] private Vector2Int debugImgResolution = new(1280,960);
+        [SerializeField] protected TestImageManager m_testImageManager;
+        [SerializeField] protected Camera m_debugCamera;
+
 
         #region Babyproofxr private variables
         private bool m_isPartOfRiskObjects = false;
@@ -49,7 +54,13 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                     dangerousLabelDict.Add(mlClassificationIndex, dangerousLabel);
                 }
             }
-            m_filter = new BabyProofxrFilter(chockingHazardMaxSize, dangerousLabelDict);
+
+            if (m_testImageManager == null || m_debugCamera == null)
+            {
+                Debug.LogWarning($"[{nameof(BabyProofxrInferenceRunManager)} - Play mode testing not possible. Needs a debug camera and TestImageManager]");
+            }
+
+            m_filter = new BabyProofxrFilter(chockingHazardMaxSize, dangerousLabelDict, m_testImageManager, m_debugCamera);
 
             LoadModel();
         }
@@ -126,7 +137,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                         var intrinsics = PassthroughCameraUtils.GetCameraIntrinsics(CameraEye);
                         camRes = intrinsics.Resolution;
 #else
-                        camRes = new Vector2Int(1280, 960);
+                        camRes = debugImgResolution;
 #endif
                         // Filter the results
                         var filteredBoxes = m_filter.FilterResults(
@@ -142,7 +153,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                         );
 
                         // Update UI with filtered results
-                        m_babyProofxrUiInference.DrawUIBoxes(filteredBoxes);
+                        m_babyProofxrUiInference.ProcessFilteredEntries(filteredBoxes);
                         m_download_state = 5;
                     }
                     break;

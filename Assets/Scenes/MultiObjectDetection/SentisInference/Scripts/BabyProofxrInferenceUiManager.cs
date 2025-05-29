@@ -10,7 +10,6 @@ using Unity.Sentis;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
-using PassthroughCameraSamples.Utils;
 
 namespace PassthroughCameraSamples.MultiObjectDetection
 {
@@ -20,6 +19,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         [Space(10)]
         [Header("Sign display references")]
         [SerializeField] private HazardOverlayManager hazardPrefabManager;
+        [SerializeField] private bool shouldDisplayBoxes = false;
 
         [Header("Dangerous display references")]
         [SerializeField] private Color m_dangerousBoxColor;
@@ -30,10 +30,6 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         [SerializeField] private float chockingHazardMaxSize = 0.032f; // according to studies
         [SerializeField] private Color m_chockingBoxColor;
         [SerializeField] private Color m_chockingFontColor;
-        
-        [Header("Test in play mode")]
-        [SerializeField] protected TestImageManager m_testImageManager;
-        [SerializeField] protected Camera m_debugCamera;
         
         private string[] m_dangerousLabels;
         private Dictionary<int, string> m_dangerousLabelAssetDict;
@@ -84,7 +80,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         /// <summary>
         /// Draws UI boxes for pre-filtered bounding boxes
         /// </summary>
-        public void DrawUIBoxes(List<BabyProofBoundingBox> filteredBoxes)
+        public void ProcessFilteredEntries(List<BabyProofBoundingBox> filteredBoxes)
         {
             // Update canvas position
             m_detectionCanvas.UpdatePosition();
@@ -92,15 +88,18 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             // Clear current boxes
             ClearAnnotations();
 
-            if (filteredBoxes.Count == 0)
+            OnObjectsDetected?.Invoke(filteredBoxes.Count);
+            
+            if (shouldDisplayBoxes)
             {
-                hazardPrefabManager.UpdateHazards(new());
-                OnObjectsDetected?.Invoke(0);
-                return;
+                DrawUIBoxes(filteredBoxes);
             }
 
-            OnObjectsDetected?.Invoke(filteredBoxes.Count);
+            hazardPrefabManager.UpdateHazards(filteredBoxes);
+        }
 
+        private void DrawUIBoxes(List<BabyProofBoundingBox> filteredBoxes)
+        {
             // Draw each filtered box
             for (int i = 0; i < filteredBoxes.Count; i++)
             {
@@ -114,8 +113,6 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                 // Draw 2D box
                 DrawBox(box.BaseBox, i, color, fontColor);
             }
-
-            hazardPrefabManager.UpdateHazards(filteredBoxes);
         }
 
         // Keep the original method for backward compatibility
@@ -125,6 +122,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             Debug.LogWarning("Using deprecated DrawUIBoxes method. Please use the filtered version instead.");
         }
 
+        /*
         private Vector3? CalculateWorldPosition(ref Vector2Int camRes, float perX, float perY)
         {
             // Get the 3D marker world position using Depth Raycast
@@ -181,7 +179,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             var worldPos = m_environmentRaycast.PlaceGameObjectByScreenPos(ray);
             return worldPos;
         }
-
+        */
         #endregion
     }
 }
