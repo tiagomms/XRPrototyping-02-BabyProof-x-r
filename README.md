@@ -33,17 +33,29 @@ In addition to this, I can tell my partner and my baby that I am working on impo
 
 ## Project Structure
 Assets/
+
 ├── Scenes/
+
 │ └── MultiObjectDetection/
+
 │ └── SentisInference/
+
 │ └── Scripts/
+
 │ ├── BabyProofxrFilter.cs
+
 │ ├── BabyProofxrInferenceRunManager.cs
+
 │ └── BabyProofxrInferenceUiManager.cs
+
 └── Scripts/
+
 └── BoundingZones/
+
 ├── BoundingZoneChecker.cs
+
 ├── BoundingZoneManager.cs
+
 └── LabelOffsetConfig.cs
 
 
