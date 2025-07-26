@@ -9,7 +9,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
     /// </summary>
     public class BabyProofxrFilter
     {
-        public bool IgnoreDangerZoneFilter {get; private set;}
+        public bool IgnoreDangerZoneFilter { get; private set; }
 
         private readonly float chockingHazardMaxSize;
         private readonly Dictionary<int, string> dangerousLabelDict;
@@ -26,7 +26,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         public static event Action<bool> IsDangerZoneFilterOn;
 
         public BabyProofxrFilter(
-            float chockingHazardMaxSize, 
+            float chockingHazardMaxSize,
             Dictionary<int, string> dangerousLabelDict,
             Dictionary<int, string> ignoreLabelDict,
             BoundingZoneManager boundingDangerZoneManager,
@@ -66,7 +66,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         /// <param name="camRes">Camera resolution</param>
         /// <param name="environmentRaycast">Raycast utility for world position calculation</param>
         /// <returns>List of filtered bounding boxes</returns>
-        public List<BabyProofxrInferenceUiManager.BabyProofBoundingBox> FilterResults(
+        public List<BoundingBox> FilterResults(
             Unity.Sentis.Tensor<float> output,
             Unity.Sentis.Tensor<int> labelIDs,
             string[] labels,
@@ -77,7 +77,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             Vector2Int camRes,
             EnvironmentRayCastSampleManager environmentRaycast)
         {
-            List<BabyProofxrInferenceUiManager.BabyProofBoundingBox> filteredBoxes = new();
+            List<BoundingBox> filteredBoxes = new();
 
             var boxesFound = output.shape[0];
             if (boxesFound <= 0 || !boundingDangerZoneManager.IsInitialized)
@@ -133,19 +133,17 @@ namespace PassthroughCameraSamples.MultiObjectDetection
 
                 XRDebugLogViewer.Log($"Object Found: {label}, Chocking {isChockingHazard}, Dangerous {isDangerousObject}");
                 // Create bounding box
-                var box = new BabyProofxrInferenceUiManager.BabyProofBoundingBox
+                var box = new BoundingBox
                 {
-                    BaseBox = new SentisInferenceUiManager.BoundingBox
-                    {
-                        CenterX = centerX,
-                        CenterY = centerY,
-                        Width = boxWidth,
-                        Height = boxHeight,
-                        Label = label,
-                        WorldPos = centerWorldPos,
-                        ClassName = label
-                    },
                     Id = n,
+                    CenterX = centerX,
+                    CenterY = centerY,
+                    Width = boxWidth,
+                    Height = boxHeight,
+                    LogLabel = label,
+                    UILabel = label,
+                    WorldPos = centerWorldPos,
+                    ClassName = label,
                     IsDangerous = isDangerousObject,
                     IsChockingHazard = isChockingHazard
                 };
@@ -179,12 +177,12 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             for (int i = 0; i < vector2s.Length; i++)
             {
                 Vector2 v2 = vector2s[i];
-                float perX = (centerX + displayWidth/2 + v2.x) / displayWidth;
-                float perY = (centerY + displayHeight/2 + v2.y) / displayHeight;
+                float perX = (centerX + displayWidth / 2 + v2.x) / displayWidth;
+                float perY = (centerY + displayHeight / 2 + v2.y) / displayHeight;
                 Vector3? worldPos = CalculateWorldPosition(perX, perY, camRes, environmentRaycast);
 
-                surroundBoxWorldDistance[i] = worldPos != null ? 
-                    Vector3.Distance(centerWorldPos, (Vector3)worldPos) : 
+                surroundBoxWorldDistance[i] = worldPos != null ?
+                    Vector3.Distance(centerWorldPos, (Vector3)worldPos) :
                     Mathf.Infinity;
             }
 
@@ -228,7 +226,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             var yOffset = (perY - 0.5f) * imageHeight;
 
             // Calculate the world position by offsetting from the raw image's center
-            var worldPosition = rawImagePosition + 
+            var worldPosition = rawImagePosition +
                               rawImageRotation * new Vector3(xOffset, yOffset, 0);
 
 
@@ -246,4 +244,4 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             return worldPos;
         }
     }
-} 
+}

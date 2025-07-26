@@ -69,6 +69,16 @@ The project can operate in two modes:
    - Use appropriate VR interaction patterns
    - Consider performance implications of VR rendering
 
+9. Unity Compilation and Development Workflow
+   - **CRITICAL**: Wait for Unity to finish compiling before making additional changes
+   - If Unity is compiling (spinning icon in bottom right), wait for it to complete
+   - Do not start new solutions or make changes while Unity is reloading
+   - If compilation errors appear, wait for Unity to finish before attempting fixes
+   - When creating new classes or interfaces, allow Unity time to recognize them
+   - If you see "type not found" errors, wait for Unity to finish compiling
+   - Use the Console window to monitor compilation status
+   - If errors persist after compilation, then proceed with fixes
+
 ### Production Mode
 - Focus on code quality
 - Comprehensive error handling

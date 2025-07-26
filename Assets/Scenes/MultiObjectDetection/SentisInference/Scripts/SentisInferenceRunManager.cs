@@ -11,6 +11,13 @@ namespace PassthroughCameraSamples.MultiObjectDetection
     [MetaCodeSample("PassthroughCameraApiSamples-MultiObjectDetection")]
     public class SentisInferenceRunManager : MonoBehaviour
     {
+        public enum ExpectedOutput
+        {
+            BoxesOnly = 0,
+            PrefabsOnly = 1,
+            BoxesAndPrefab = 2
+        }
+
         [Header("Sentis Model config")]
         [SerializeField] protected Vector2Int m_inputSize = new(640, 640);
         [SerializeField] protected BackendType m_backend = BackendType.CPU;
@@ -18,6 +25,8 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         [SerializeField] protected int m_layersPerFrame = 25;
         [SerializeField] protected TextAsset m_labelsAsset;
         public bool IsModelLoaded { get; protected set; } = false;
+
+        [SerializeField] protected ExpectedOutput expectedOutput;
 
         [Header("UI display references")]
         [SerializeField] private SentisInferenceUiManager m_uiInference;
@@ -39,6 +48,8 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         protected Tensor<float> m_pullOutput;
         protected Tensor<int> m_pullLabelIDs;
         protected bool m_isWaiting = false;
+
+        protected bool m_doesModelIdentifyOnlyOneThing;
 
         #region Unity Functions
         protected virtual IEnumerator Start()
@@ -164,10 +175,13 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             // Get the output 1 (labels ID data) from the model output using Sentis pull request.
             Debug.Log($"Sentis - [PollRequestLabelIDs]");
 
+            // TODO: protect code from if model returns one thing or not - PeekOutput(1) if model detects multiple things, PeekOutput(0) and some other type if detects one thing well
             m_pullLabelIDs = m_engine.PeekOutput(1) as Tensor<int>;
             if (m_pullLabelIDs.dataOnBackend != null)
             {
+                Debug.Log($"Sentis - [PollRequestLabelIDs] - pullLabelIDs before ReadbackRequest: {m_pullLabelIDs}");
                 m_pullLabelIDs.ReadbackRequest();
+                Debug.Log($"Sentis - [PollRequestLabelIDs] - pullLabelIDs after ReadbackRequest: {m_pullLabelIDs}");
                 m_isWaiting = true;
             }
             else
@@ -233,8 +247,11 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                     }
                     break;
                 case 3:
-                    // NOTE: stage 3 - where I need to filter and send to accurate ui box
-                    m_uiInference.DrawUIBoxes(m_output, m_labelIDs, m_inputSize.x, m_inputSize.y);
+                    // NOTE: stage 3 - where I need to get the bounding boxes data
+                    // TODO: Test: if there are improvements in making the m_isWaiting cycle between Building the dataset and then spawning things
+
+                    m_uiInference.BuildBoundingBoxes(m_output, m_labelIDs, m_inputSize.x, m_inputSize.y);
+                    DrawInferences();
                     m_download_state = 5;
                     break;
                 case 4:
@@ -247,6 +264,18 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                     m_output?.Dispose();
                     m_labelIDs?.Dispose();
                     break;
+            }
+        }
+
+        protected virtual void DrawInferences()
+        {
+            if (expectedOutput == ExpectedOutput.BoxesOnly || expectedOutput == ExpectedOutput.BoxesAndPrefab)
+            {
+                m_uiInference.DrawBoundingBoxes();
+            }
+            if (expectedOutput == ExpectedOutput.PrefabsOnly || expectedOutput == ExpectedOutput.BoxesAndPrefab)
+            {
+                m_uiInference.DrawPrefabs();
             }
         }
         #endregion
