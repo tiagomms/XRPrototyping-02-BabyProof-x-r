@@ -1,7 +1,9 @@
 // Copyright (c) Meta Platforms, Inc. and affiliates.
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Meta.XR.Samples;
 using UnityEngine;
 using UnityEngine.Events;
@@ -44,7 +46,15 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         private float m_delayPauseBackTime = 0;
 
         #region Unity Functions
-        private void Awake() => OVRManager.display.RecenteredPose += CleanMarkersCallBack;
+
+        private void Awake()
+        {
+            // NOTE: way of avoiding Oculus altogether if you just want to test on UNITY EDITOR the Unity Sentis
+            if (OVRManager.instance != null)
+            {
+                OVRManager.display.RecenteredPose += CleanMarkersCallBack;
+            }
+        }
 
         private IEnumerator Start()
         {
@@ -152,7 +162,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         private void SpwanCurrentDetectedObjects()
         {
             var count = 0;
-            foreach (var box in m_uiInference.BoxDrawn)
+            foreach (var box in m_uiInference.CurrentBoundingBoxList)
             {
                 if (PlaceMarkerUsingEnvironmentRaycast(box.WorldPos, box.ClassName))
                 {

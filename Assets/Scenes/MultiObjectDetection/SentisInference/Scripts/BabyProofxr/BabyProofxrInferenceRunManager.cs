@@ -39,7 +39,6 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         private bool m_isPartOfRiskObjects = false;
         public BabyProofxrFilter InferenceFilter {get; private set;}
         private string[] m_labels;
-        private List<BabyProofxrInferenceUiManager.BabyProofBoundingBox> filteredBoxes = new();
         private Dictionary<int, string> m_ignoreLabelDict;
 
         #endregion
@@ -178,7 +177,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                         camRes = debugImgResolution;
 #endif
                         // Filter the results
-                        filteredBoxes = InferenceFilter.FilterResults(
+                        m_babyProofxrUiInference.CurrentBoundingBoxList = InferenceFilter.FilterResults(
                             m_output,
                             m_labelIDs,
                             m_labels,
@@ -195,7 +194,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                     else
                     {
                         // Update UI with filtered results
-                        m_babyProofxrUiInference.ProcessFilteredEntries(filteredBoxes);
+                        m_babyProofxrUiInference.ProcessFilteredEntries();
                         m_isWaiting = false;
                         m_download_state = 5;
                     }
@@ -209,7 +208,8 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                     m_started = false;
                     m_isWaiting = false;
 
-                    filteredBoxes.Clear();
+                    // NOTE: Don't think it is needed
+                    //m_babyProofxrUiInference.CurrentBoundingBoxList.Clear();
 
                     m_output?.Dispose();
                     m_labelIDs?.Dispose();
