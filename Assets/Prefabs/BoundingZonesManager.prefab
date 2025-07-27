@@ -47,8 +47,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultOffsetConfig: {fileID: 11400000, guid: ea1873a6ac0396540bcad3d88267d222, type: 2}
   debugButton: {fileID: -2099379676528639254, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  defaultExternalMaterial: {fileID: 2100000, guid: 7c59b3bd0aea9c64dafb085e1cc411f6, type: 2}
-  defaultInternalMaterial: {fileID: 2100000, guid: fd9a4565738b9ae4285dfbb456679bca, type: 2}
+  defaultExternalMaterial: {fileID: 15302, guid: 0000000000000000f000000000000000, type: 0}
+  defaultInternalMaterial: {fileID: 15303, guid: 0000000000000000f000000000000000, type: 0}
 --- !u!114 &7836656711019851100
 MonoBehaviour:
   m_ObjectHideFlags: 0
