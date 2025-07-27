@@ -30,6 +30,12 @@ public class BoundingZoneChecker : MonoBehaviour
     private LabelOffsetConfig.ExternalOffset _defaultExternalOffset = new() { HorizontalRatio = 1.2f, VerticalMeters = 0.2f };
     private LabelOffsetConfig.InternalOffset _defaultInternalOffset = new() { HorizontalRatio = 0.8f, VerticalMeters = 0.2f };
 
+    private float _defaultVerticalInternalBottomOffset = 0.05f;
+    private float _defaultVerticalExternalBottomOffset = 0.03f;
+
+    private float _visualVerticalInternalBottomOffset = 0.01f;
+    private float _visualVerticalExternalBottomOffset = 0.005f;
+
     public void Initialize(MRUKAnchor.SceneLabels labelID, string id, Rect boundsRect, LabelOffsetConfig offsetConfig, Material externalMaterial, Material internalMaterial)
     {
         this.labelID = labelID;
@@ -49,7 +55,7 @@ public class BoundingZoneChecker : MonoBehaviour
             : (_defaultExternalOffset, _defaultInternalOffset);
 
         // Calculate horizontal offsets based on ratios
-        Vector3 extents = new Vector3(
+        Vector3 externalExtents = new Vector3(
             boundsRect.width * externalOffset.HorizontalRatio,
             externalOffset.VerticalMeters,
             boundsRect.height * externalOffset.HorizontalRatio
@@ -61,9 +67,15 @@ public class BoundingZoneChecker : MonoBehaviour
             Mathf.Max(0, boundsRect.height * internalOffset.HorizontalRatio)
         );
 
-        // Start with local-aligned bounds
-        externalBounds = new Bounds(Vector3.zero, extents);
-        internalBounds = new Bounds(Vector3.zero, internalExtents);
+        // Calculate center positions to make bounds extend mostly upward
+        // The center should be positioned so that the bottom is at -_defaultVerticalBottomOffset
+        // and the top extends upward by the full vertical meters
+        Vector3 externalCenter = new Vector3(0f, (externalExtents.y / 2f) - _defaultVerticalExternalBottomOffset, 0f);
+        Vector3 internalCenter = new Vector3(0f, (internalExtents.y / 2f) - _defaultVerticalInternalBottomOffset, 0f);
+
+        // Create bounds with adjusted centers
+        externalBounds = new Bounds(externalCenter, externalExtents);
+        internalBounds = new Bounds(internalCenter, internalExtents);
     }
 
     public bool IsPointInZone(Vector3 worldPoint)
@@ -71,8 +83,8 @@ public class BoundingZoneChecker : MonoBehaviour
         // Convert point into local space of the face
         Vector3 localPoint = transform.InverseTransformPoint(worldPoint);
         if (
-            labelID == MRUKAnchor.SceneLabels.FLOOR || 
-            internalBounds.extents.x == 0f || internalBounds.extents.y == 0f || internalBounds.extents.z == 0f  
+            labelID == MRUKAnchor.SceneLabels.FLOOR ||
+            internalBounds.extents.x == 0f || internalBounds.extents.y == 0f || internalBounds.extents.z == 0f
         ) // if internal bounds is plane/line/dot then I just want to check external bounds
         {
             return externalBounds.Contains(localPoint);
@@ -97,29 +109,99 @@ public class BoundingZoneChecker : MonoBehaviour
         Gizmos.matrix = oldMatrix;
     }
 
-    private void CreateExternalDebugCube()
+    private GameObject CreateBoundingCube(Vector3 scaleExtents, Vector3 center, Material cubeMaterial)
     {
+        GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        cube.transform.SetParent(transform, false);
 
-        externalCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        externalCube.transform.SetParent(transform, false);
-        externalCube.transform.localPosition = Vector3.zero;
-        externalCube.transform.localRotation = Quaternion.identity;
-        externalCube.transform.localScale = externalBounds.size;
-        externalCube.GetComponent<Renderer>().material = externalMaterial;
-        Destroy(externalCube.GetComponent<Collider>());
+        cube.transform.localPosition = center;
+        cube.transform.localScale = scaleExtents;
+
+        cube.transform.localRotation = Quaternion.identity;
+        cube.GetComponent<Renderer>().material = cubeMaterial;
+        Destroy(cube.GetComponent<Collider>());
+        return cube;
     }
 
-    private void CreateInternalDebugCube()
+    // Calculate center positions to make bounds extend mostly upward
+    // The center should be positioned so that the bottom is at -_defaultVerticalBottomOffset
+    // and the top extends upward by the full vertical meters
+    private void CreateDebugExternalCube()
     {
-        internalCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        internalCube.transform.SetParent(transform, false);
-        internalCube.transform.localPosition = Vector3.zero;
-        internalCube.transform.localRotation = Quaternion.identity;
-        internalCube.transform.localScale = internalBounds.size;
-        internalCube.GetComponent<Renderer>().material = internalMaterial;
-        Destroy(internalCube.GetComponent<Collider>());
+        externalCube = CreateBoundingCube(externalBounds.size, externalBounds.center, externalMaterial);
     }
-    
+
+    private void CreateDebugInternalCube()
+    {
+        internalCube = CreateBoundingCube(internalBounds.size, internalBounds.center, internalMaterial);
+    }
+
+    // visual cube is a cube that is the same size as the external cube but with the y-axis scaled to the default vertical bottom offset
+    // for prettier visuals
+    private void CreateVisualExternalCube()
+    {
+        Vector3 flatY_externalExtents = externalBounds.size;
+        flatY_externalExtents.y = _visualVerticalExternalBottomOffset * 2f;
+        externalCube = CreateBoundingCube(flatY_externalExtents, Vector3.zero, externalMaterial);
+    }
+
+    private void CreateVisualInternalCube()
+    {
+        Vector3 flatY_internalExtents = internalBounds.size;
+        flatY_internalExtents.y = _visualVerticalInternalBottomOffset * 2f;
+        internalCube = CreateBoundingCube(flatY_internalExtents, Vector3.zero, internalMaterial);
+    }
+
+
+    // Debug cubes
+    public void ShowOnlyDebugInternalCube()
+    {
+        HideCubes();
+        CreateDebugInternalCube();
+    }
+
+    public void ShowOnlyDebugExternalCube()
+    {
+        HideCubes();
+        CreateDebugExternalCube();
+    }
+
+    public void ShowBothDebugCubes()
+    {
+        HideCubes(); // Ensure clean state
+
+        CreateDebugExternalCube();
+        CreateDebugInternalCube();
+    }
+
+    // Visual cubes
+    public void ShowOnlyVisualInternalCube()
+    {
+        HideCubes();
+        CreateVisualInternalCube();
+    }
+
+    public void ShowOnlyVisualExternalCube()
+    {
+        HideCubes();
+        CreateVisualExternalCube();
+    }
+
+    public void ShowBothVisualCubes()
+    {
+        HideCubes(); // Ensure clean state
+
+        CreateVisualExternalCube();
+        CreateVisualInternalCube();
+    }
+
+    // generic
+    public void HideCubes()
+    {
+        HideExternalCube();
+        HideInternalCube();
+    }
+
     private void HideInternalCube()
     {
         if (internalCube != null) Destroy(internalCube);
@@ -128,33 +210,6 @@ public class BoundingZoneChecker : MonoBehaviour
     private void HideExternalCube()
     {
         if (externalCube != null) Destroy(externalCube);
-    }
-
-    public void ShowOnlyInternalCube()
-    {
-        HideDebugCubes();
-        CreateInternalDebugCube();
-    }
-
-    public void ShowOnlyExternalCube()
-    {
-        HideDebugCubes();
-        CreateExternalDebugCube();
-    }
-
-    public void ShowBothDebugCubes()
-    {
-        HideDebugCubes(); // Ensure clean state
-
-        CreateExternalDebugCube();
-        CreateInternalDebugCube();
-
-    }
-
-    public void HideDebugCubes()
-    {
-        HideExternalCube();
-        HideInternalCube();
     }
 
 

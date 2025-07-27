@@ -168,19 +168,19 @@ public class BoundingZoneManager : MonoBehaviour
             case DebugState.None:
                 foreach (var item in allZones)
                 {
-                    item.HideDebugCubes();
+                    item.HideCubes();
                 }
                 break;
             case DebugState.ShowInternal:
                 foreach (var item in allZones)
                 {
-                    item.ShowOnlyInternalCube();
+                    item.ShowOnlyDebugInternalCube();
                 }
                 break;
             case DebugState.ShowExternal:
                 foreach (var item in allZones)
                 {
-                    item.ShowOnlyExternalCube();
+                    item.ShowOnlyDebugExternalCube();
                 }
                 break;
             case DebugState.ShowBoth:
@@ -199,12 +199,12 @@ public class BoundingZoneManager : MonoBehaviour
         {
             foreach (var item in allZones)
             {
-                item.HideDebugCubes();
+                item.HideCubes();
             }
         } else {
             foreach (var item in allZones)
             {
-                item.ShowOnlyInternalCube();
+                item.ShowOnlyVisualInternalCube();
             }
         }
     }
