@@ -11560,9 +11560,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 840573216}
-  - component: {fileID: 840573215}
-  - component: {fileID: 840573214}
-  - component: {fileID: 840573213}
   - component: {fileID: 840573217}
   m_Layer: 4
   m_Name: ControlledObject
@@ -11571,116 +11568,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &840573213
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 840573212}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 65307bdd58ef73943b02570244339263, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _controlledObject: {fileID: 840573212}
-  _colors:
-  - {r: 1, g: 0, b: 0, a: 0}
-  - {r: 1, g: 0.5019608, b: 0, a: 0}
-  - {r: 1, g: 1, b: 0, a: 0}
-  - {r: 0, g: 1, b: 0, a: 0}
-  - {r: 0, g: 0, b: 1, a: 0}
-  - {r: 0.5019608, g: 0, b: 1, a: 0}
-  _rotationEnabledIcon: {fileID: 845732222}
-  _rotationDisabledIcon: {fileID: 1349672847}
-  _rotationLerpSpeed: 1
-  _rotationDirectionText: {fileID: 0}
-  _rotationDirectionNames:
-  - Left
-  - Right
-  - Up
-  - Down
-  _rotationDirectionIcons:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  _rotationDirections:
-  - {x: 0, y: 0.70710677, z: 0, w: 0.70710677}
-  - {x: 0, y: -0.70710677, z: 0, w: 0.70710677}
-  - {x: 0.70710677, y: 0, z: 0, w: 0.70710677}
-  - {x: -0.70710677, y: 0, z: 0, w: 0.70710677}
-  _elevationText: {fileID: 0}
-  _elevationChangeIncrement: 0.1
-  _elevationChangeLerpSpeed: 1
-  _shapeNameText: {fileID: 0}
-  _shapeNames:
-  - Cube
-  - Dodecahedron
-  - Icosahedron
-  - Octahedron
-  - Tetrahedron
-  - Trapezohedron
-  _shapes:
-  - {fileID: 1008060561697206567, guid: 6800e9c67be6f054384523c73d34583f, type: 3}
-  - {fileID: -2194042186925421486, guid: 6800e9c67be6f054384523c73d34583f, type: 3}
-  - {fileID: -2309404035205077305, guid: 6800e9c67be6f054384523c73d34583f, type: 3}
-  - {fileID: 4944435276719414011, guid: 6800e9c67be6f054384523c73d34583f, type: 3}
-  - {fileID: -645592108707704995, guid: 6800e9c67be6f054384523c73d34583f, type: 3}
-  - {fileID: 8918106655620760605, guid: 6800e9c67be6f054384523c73d34583f, type: 3}
---- !u!23 &840573214
-MeshRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 840573212}
-  m_Enabled: 0
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
-  m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
-  m_SmallMeshCulling: 1
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 5863650252929523565, guid: d4a9567b63f402344be887b1a296bcc6, type: 3}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_AdditionalVertexStreams: {fileID: 0}
---- !u!33 &840573215
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 840573212}
-  m_Mesh: {fileID: 0}
 --- !u!4 &840573216
 Transform:
   m_ObjectHideFlags: 0
@@ -11853,7 +11740,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -7825952099826583014, guid: 64f884351318b694f942625580e64a8b, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 04baeaf268b4c884389b1de7f2ee6e05, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -18992,7 +18879,7 @@ PrefabInstance:
     - target: {fileID: 1861521771991926428, guid: 040567cd4431b484e9999e28a102d366, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 2339353539686057490, guid: 4f3b4a4ae58ad484e9fc92ab68a8ffef, type: 3}
+      objectReference: {fileID: 21300000, guid: c91585df70865ea419905813270a6e2c, type: 3}
     - target: {fileID: 1861521771991926428, guid: 040567cd4431b484e9999e28a102d366, type: 3}
       propertyPath: m_Color.b
       value: 1
@@ -19092,7 +18979,7 @@ PrefabInstance:
     - target: {fileID: 6705262112095271069, guid: 040567cd4431b484e9999e28a102d366, type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[2].m_Target
       value: 
-      objectReference: {fileID: 840573213}
+      objectReference: {fileID: 0}
     - target: {fileID: 6705262112095271069, guid: 040567cd4431b484e9999e28a102d366, type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
       value: 2
@@ -24967,7 +24854,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5518670934586006478, guid: 8f403dcd176949148ab24331defe47fb, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 217
+      value: 217.00002
       objectReference: {fileID: 0}
     - target: {fileID: 6204767134508456339, guid: 8f403dcd176949148ab24331defe47fb, type: 3}
       propertyPath: m_AnchorMax.y
@@ -29570,7 +29457,7 @@ PrefabInstance:
     - target: {fileID: 6705262112095271069, guid: 040567cd4431b484e9999e28a102d366, type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[2].m_Target
       value: 
-      objectReference: {fileID: 840573213}
+      objectReference: {fileID: 0}
     - target: {fileID: 6705262112095271069, guid: 040567cd4431b484e9999e28a102d366, type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
       value: 2
