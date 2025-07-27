@@ -47,7 +47,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultOffsetConfig: {fileID: 11400000, guid: ea1873a6ac0396540bcad3d88267d222, type: 2}
   debugButton: {fileID: -2099379676528639254, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  defaultExternalMaterial: {fileID: 15302, guid: 0000000000000000f000000000000000, type: 0}
+  defaultExternalMaterial: {fileID: 2100000, guid: 543b651ad3494a6499aacc90e536b48d, type: 2}
   defaultInternalMaterial: {fileID: 15303, guid: 0000000000000000f000000000000000, type: 0}
 --- !u!114 &7836656711019851100
 MonoBehaviour:

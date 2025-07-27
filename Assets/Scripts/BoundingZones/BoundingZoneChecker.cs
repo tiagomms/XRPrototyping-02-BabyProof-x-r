@@ -30,6 +30,8 @@ public class BoundingZoneChecker : MonoBehaviour
     private LabelOffsetConfig.ExternalOffset _defaultExternalOffset = new() { HorizontalRatio = 1.2f, VerticalMeters = 0.2f };
     private LabelOffsetConfig.InternalOffset _defaultInternalOffset = new() { HorizontalRatio = 0.8f, VerticalMeters = 0.2f };
 
+    private float _defaultVerticalBottomOffset = 0.05f;
+
     public void Initialize(MRUKAnchor.SceneLabels labelID, string id, Rect boundsRect, LabelOffsetConfig offsetConfig, Material externalMaterial, Material internalMaterial)
     {
         this.labelID = labelID;
@@ -49,7 +51,7 @@ public class BoundingZoneChecker : MonoBehaviour
             : (_defaultExternalOffset, _defaultInternalOffset);
 
         // Calculate horizontal offsets based on ratios
-        Vector3 extents = new Vector3(
+        Vector3 externalExtents = new Vector3(
             boundsRect.width * externalOffset.HorizontalRatio,
             externalOffset.VerticalMeters,
             boundsRect.height * externalOffset.HorizontalRatio
@@ -60,9 +62,8 @@ public class BoundingZoneChecker : MonoBehaviour
             Mathf.Max(0, internalOffset.VerticalMeters),
             Mathf.Max(0, boundsRect.height * internalOffset.HorizontalRatio)
         );
-
-        // Start with local-aligned bounds
-        externalBounds = new Bounds(Vector3.zero, extents);
+        // Create bounds with adjusted centers
+        externalBounds = new Bounds(Vector3.zero, externalExtents);
         internalBounds = new Bounds(Vector3.zero, internalExtents);
     }
 
@@ -102,9 +103,17 @@ public class BoundingZoneChecker : MonoBehaviour
 
         externalCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
         externalCube.transform.SetParent(transform, false);
-        externalCube.transform.localPosition = Vector3.zero;
+
+        // Calculate center positions to make bounds extend mostly upward
+        // The center should be positioned so that the bottom is at -_defaultVerticalBottomOffset
+        // and the top extends upward by the full vertical meters
+        Vector3 externalExtents = externalBounds.size;
+        Vector3 externalCenter = new Vector3(0f, (externalExtents.y / 2f) - _defaultVerticalBottomOffset, 0f);
+
+        externalCube.transform.localPosition = externalCenter;
+        externalCube.transform.localScale = externalExtents;
+
         externalCube.transform.localRotation = Quaternion.identity;
-        externalCube.transform.localScale = externalBounds.size;
         externalCube.GetComponent<Renderer>().material = externalMaterial;
         Destroy(externalCube.GetComponent<Collider>());
     }
@@ -113,9 +122,14 @@ public class BoundingZoneChecker : MonoBehaviour
     {
         internalCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
         internalCube.transform.SetParent(transform, false);
-        internalCube.transform.localPosition = Vector3.zero;
+
+        Vector3 internalExtents = internalBounds.size;
+        Vector3 internalCenter = new Vector3(0f, (internalExtents.y / 2f) - _defaultVerticalBottomOffset, 0f);
+        
+        internalCube.transform.localPosition = internalCenter;
+        internalCube.transform.localScale = internalExtents;
+
         internalCube.transform.localRotation = Quaternion.identity;
-        internalCube.transform.localScale = internalBounds.size;
         internalCube.GetComponent<Renderer>().material = internalMaterial;
         Destroy(internalCube.GetComponent<Collider>());
     }
