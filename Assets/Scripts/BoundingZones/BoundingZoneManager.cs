@@ -192,4 +192,20 @@ public class BoundingZoneManager : MonoBehaviour
         }
         _debugState = newState;
     }
+
+    public void ToggleDebugMode(bool enabled)
+    {
+        if (!enabled)
+        {
+            foreach (var item in allZones)
+            {
+                item.HideDebugCubes();
+            }
+        } else {
+            foreach (var item in allZones)
+            {
+                item.ShowOnlyInternalCube();
+            }
+        }
+    }
 }

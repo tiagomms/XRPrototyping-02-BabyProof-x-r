@@ -85,35 +85,5 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             }
             return HazardType.Regular;
         }
-
-        private void ShowPrefabAndDoScaleUpAnimation(GameObject overlayObj)
-        {
-            overlayObj.SetActive(true);
-            overlayObj.transform.localScale = Vector3.zero;
-            overlayObj.transform.DOScale(Vector3.one, spawnScaleDuration).SetEase(Ease.OutBack);
-        }
-
-        /// <summary>
-        /// Unsure you want this, at least for logging might be good
-        /// </summary>
-        /// <param name="overlayObject"></param>
-        /// <param name="box"></param>
-        private void UpdateLabel(GameObject overlayObject, BoundingBox box)
-        {
-            // TODO: improve this implementation it is terrible x)
-            Text text = overlayObject.GetComponentInChildren<Text>();
-            if (text != null)
-            {
-                text.text = $"{box.UILabel}";
-                return;
-            }
-
-            TMP_Text tmpText = overlayObject.GetComponentInChildren<TMP_Text>();
-            if (tmpText != null)
-            {
-                tmpText.text = $"{box.UILabel}";
-                return;
-            }
-        }
     }
 }
