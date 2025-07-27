@@ -192,14 +192,19 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                 // Cleanup if unmatched too long
                 if (overlay.framesUnmatched > maxFramesUnmatched)
                 {
-                    GameObject toDestroy = overlay.overlayObject;
-                    activeOverlays.RemoveAt(i);
-
-                    toDestroy.transform.DOScale(Vector3.zero, destroyScaleDuration)
-                        .SetEase(Ease.InBack)
-                        .OnComplete(() => Destroy(toDestroy));
+                    CleanUpOverlayObject(i, overlay);
                 }
             }
+        }
+
+        private void CleanUpOverlayObject(int i, BaseOverlayData overlay)
+        {
+            GameObject toDestroy = overlay.overlayObject;
+            activeOverlays.RemoveAt(i);
+
+            toDestroy.transform.DOScale(Vector3.zero, destroyScaleDuration)
+                .SetEase(Ease.InBack)
+                .OnComplete(() => Destroy(toDestroy));
         }
 
         /// <summary>
@@ -231,6 +236,15 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                 tmpText.text = $"{box.UILabel}";
                 return;
             }
+        }
+
+        public void CleanUpAllOverlays()
+        {
+            for (int i = activeOverlays.Count - 1; i >= 0; i--)
+            {
+                CleanUpOverlayObject(i, activeOverlays[i]);
+            }
+            activeOverlays.Clear();
         }
     }
 } 

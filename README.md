@@ -126,8 +126,13 @@ This is a prototype project. While contributions are welcome, please note that t
 
 This project utilizes the following third-party assets:
 
-- [Question 3D icon](https://sketchfab.com/3d-models/question-3d-icon-ba8c685715a849fab6f289a2469d1567)
-- [Exclamation Point](https://sketchfab.com/3d-models/exclamation-point-8161d30cfabe446dae1fabfb920b0f58)
+- 3D Models
+   - [Question 3D icon](https://sketchfab.com/3d-models/question-3d-icon-ba8c685715a849fab6f289a2469d1567)
+   - [Exclamation Point](https://sketchfab.com/3d-models/exclamation-point-8161d30cfabe446dae1fabfb920b0f58)
+
+- Icons
+   - [Baby safety icons created by Iconjam - Flaticon](https://www.flaticon.com/free-icons/baby-safety)
+   
 
 ## License
 MIT License

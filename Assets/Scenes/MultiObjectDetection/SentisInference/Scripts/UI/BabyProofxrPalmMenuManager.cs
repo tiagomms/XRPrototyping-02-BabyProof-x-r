@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace PassthroughCameraSamples.MultiObjectDetection
 {
-    public class BabyProofxrPalmMenu : MonoBehaviour
+    public class BabyProofxrPalmMenuManager : MonoBehaviour
     {
         [SerializeField]
         private PokeInteractable _menuInteractable;

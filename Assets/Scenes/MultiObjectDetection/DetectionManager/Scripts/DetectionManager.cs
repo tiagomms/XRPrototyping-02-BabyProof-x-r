@@ -102,7 +102,10 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                 // Manage the Initial Ui Menu
                 if (hasValidTexture && m_isSentisReady)
                 {
-                    m_uiMenuManager.OnInitialMenu(m_environmentRaycast.HasScenePermission());
+                    if (m_uiMenuManager != null && m_uiMenuManager.enabled)
+                    {
+                        m_uiMenuManager.OnInitialMenu(m_environmentRaycast.HasScenePermission());
+                    }
                     m_isStarted = true;
                 }
             }
@@ -226,6 +229,11 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         public void OnPause(bool pause)
         {
             m_isPaused = pause;
+        }
+
+        public void OnStart(bool started)
+        {
+            m_isPaused = !started;
         }
         #endregion
     }

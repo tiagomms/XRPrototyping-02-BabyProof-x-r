@@ -11562,7 +11562,7 @@ GameObject:
   - component: {fileID: 840573216}
   - component: {fileID: 840573217}
   m_Layer: 4
-  m_Name: ControlledObject
+  m_Name: ButtonHandlers
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11600,6 +11600,50 @@ MonoBehaviour:
   _boundaryParent: {fileID: 1896600886}
   _boundaryEnabledIcon: {fileID: 825493142}
   _boundaryDisabledIcon: {fileID: 1896600885}
+  OnBabyProofxrEnabled:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1542092273}
+        m_TargetAssemblyTypeName: PassthroughCameraSamples.MultiObjectDetection.DetectionManager,
+          Assembly-CSharp
+        m_MethodName: OnStart
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1908357005}
+        m_TargetAssemblyTypeName: PassthroughCameraSamples.MultiObjectDetection.BasePrefabManager,
+          Assembly-CSharp
+        m_MethodName: CleanUpAllOverlays
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  OnBoundaryEnabled:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 208890074}
+        m_TargetAssemblyTypeName: BoundingZoneManager, Assembly-CSharp
+        m_MethodName: ToggleDebugMode
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &841574137
 GameObject:
   m_ObjectHideFlags: 0
@@ -24854,7 +24898,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5518670934586006478, guid: 8f403dcd176949148ab24331defe47fb, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 217.00002
+      value: 217.00087
       objectReference: {fileID: 0}
     - target: {fileID: 6204767134508456339, guid: 8f403dcd176949148ab24331defe47fb, type: 3}
       propertyPath: m_AnchorMax.y
@@ -29880,6 +29924,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 417182461}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1908357005 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3571336579663893556, guid: a8b3a68ba5dda50428e0ec6bb7fc9442, type: 3}
+  m_PrefabInstance: {fileID: 4697431714512159824}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee8a4cc8bcb6a2d48bfda71e9339b857, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1916524479
 GameObject:
   m_ObjectHideFlags: 0
@@ -34296,17 +34351,50 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1744462753}
     m_Modifications:
+    - target: {fileID: 4304867643667793, guid: 259c0c899b7e0c14aa431eefdc0aacc6, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 225161860600929460, guid: 259c0c899b7e0c14aa431eefdc0aacc6, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 538354901286188544, guid: 259c0c899b7e0c14aa431eefdc0aacc6, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1655162479894736063, guid: 259c0c899b7e0c14aa431eefdc0aacc6, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2071062461582662232, guid: 259c0c899b7e0c14aa431eefdc0aacc6, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2447241005283040037, guid: 259c0c899b7e0c14aa431eefdc0aacc6, type: 3}
+      propertyPath: m_Text
+      value: Analyzing potential hazard objects using Unity Sentis and Quest 3 Passthrough
+        Camera data.
+      objectReference: {fileID: 0}
+    - target: {fileID: 4386550124580111073, guid: 259c0c899b7e0c14aa431eefdc0aacc6, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5846769668076299689, guid: 259c0c899b7e0c14aa431eefdc0aacc6, type: 3}
       propertyPath: OnPause.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1542092273}
+    - target: {fileID: 5846769668076299689, guid: 259c0c899b7e0c14aa431eefdc0aacc6, type: 3}
+      propertyPath: OnPause.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 8722207748505512710, guid: 259c0c899b7e0c14aa431eefdc0aacc6, type: 3}
       propertyPath: m_Name
       value: DetectionUiMenuPrefab
       objectReference: {fileID: 0}
     - target: {fileID: 8722207748505512710, guid: 259c0c899b7e0c14aa431eefdc0aacc6, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8722207748505512711, guid: 259c0c899b7e0c14aa431eefdc0aacc6, type: 3}
       propertyPath: m_Pivot.x

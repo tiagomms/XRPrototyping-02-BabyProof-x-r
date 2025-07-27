@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace PassthroughCameraSamples.MultiObjectDetection
 {
@@ -23,16 +24,30 @@ namespace PassthroughCameraSamples.MultiObjectDetection
 
         private bool _babyProofxrEnabled;
         private bool _boundaryEnabled;
+
+        public UnityEvent<bool> OnBabyProofxrEnabled;
+        public UnityEvent<bool> OnBoundaryEnabled;
+
         // Start is called once before the first execution of Update after the MonoBehaviour is created
-        void Start()
+        void Awake()
         {
-            // yes, silly - we enable to true, so they become false
-            _babyProofxrEnabled = true;
-            ToggleBabyProofxrEnabled();
-            
-            _boundaryEnabled = true;
-            ToggleBoundaryEnabled();
-            _boundaryParent.SetActive(false);
+            SetBabyProofxrEnabled(false);
+            SetBoundaryEnabled(false);
+        }
+
+        private void SetBabyProofxrEnabled(bool enabled)
+        {
+            _babyProofxrEnabled = enabled;
+            _babyProofxrEnabledIcon.SetActive(!_babyProofxrEnabled);
+            _babyProofxrDisabledIcon.SetActive(_babyProofxrEnabled);
+            _boundaryParent.SetActive(_babyProofxrEnabled);
+        }
+
+        private void SetBoundaryEnabled(bool enabled)
+        {
+            _boundaryEnabled = enabled;
+            _boundaryEnabledIcon.SetActive(!_boundaryEnabled);
+            _boundaryDisabledIcon.SetActive(_boundaryEnabled);
         }
 
         /// <summary>
@@ -40,12 +55,10 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         /// </summary>
         public void ToggleBabyProofxrEnabled()
         {
-            _babyProofxrEnabled = !_babyProofxrEnabled;
-            _babyProofxrEnabledIcon.SetActive(!_babyProofxrEnabled);
-            _babyProofxrDisabledIcon.SetActive(_babyProofxrEnabled);
-            
-            _boundaryParent.SetActive(_babyProofxrEnabled);
+            SetBabyProofxrEnabled(!_babyProofxrEnabled);
+
             // TODO: add a check to see if the boundary is enabled and if so, disable stuff
+            OnBabyProofxrEnabled?.Invoke(_babyProofxrEnabled);
         }
 
         /// <summary>
@@ -53,9 +66,9 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         /// </summary>
         public void ToggleBoundaryEnabled()
         {
-            _boundaryEnabled = !_boundaryEnabled;
-            _boundaryEnabledIcon.SetActive(!_boundaryEnabled);
-            _boundaryDisabledIcon.SetActive(_boundaryEnabled);
+            SetBoundaryEnabled(!_boundaryEnabled);
+
+            OnBoundaryEnabled?.Invoke(_boundaryEnabled);
         }
     }
 }
