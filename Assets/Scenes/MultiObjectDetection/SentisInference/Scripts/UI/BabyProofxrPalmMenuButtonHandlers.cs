@@ -1,18 +1,19 @@
 using UnityEngine;
 using UnityEngine.Events;
+using Utils;
 
 namespace PassthroughCameraSamples.MultiObjectDetection
 {
     public class BabyProofxrPalmMenuButtonHandlers : MonoBehaviour
     {
-
+        [Header("BabyProofxr Icons")]
         [SerializeField]
         private GameObject _babyProofxrEnabledIcon;
 
         [SerializeField]
         private GameObject _babyProofxrDisabledIcon;
 
-
+        [Header("Boundary Icons")]
         [SerializeField]
         private GameObject _boundaryParent;
         [SerializeField]
@@ -20,6 +21,16 @@ namespace PassthroughCameraSamples.MultiObjectDetection
 
         [SerializeField]
         private GameObject _boundaryDisabledIcon;
+
+        [Header("Audio")]
+        [SerializeField]
+        private AudioSource? _ambientSound;
+
+        [SerializeField]
+        private AudioSource? _activateSound;
+
+        [SerializeField]
+        private AudioSource? _deactivateSound;
 
 
         private bool _babyProofxrEnabled;
@@ -43,6 +54,36 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             _boundaryParent.SetActive(_babyProofxrEnabled);
         }
 
+        private void SetEnableGameSounds(bool enabled)
+        {
+            if (enabled)
+            {
+                BabyProofxrAudioManager.Instance.FadeAllToSilence();
+                BabyProofxrAudioManager.Instance.FadeSFXToFull();
+                
+                _deactivateSound.SafeStop();
+                
+                _ambientSound.SafePlayDelayed(0.5f);
+                // NOTE: if robot voice (0.5f) , if activate sound - immediately
+                _activateSound.SafePlayDelayed(0.5f);
+                //_activateSound.SafePlay();
+
+                BabyProofxrAudioManager.Instance.FadeMusicToFull(duration: 1.0f, delay: 2.0f);
+            }
+            else
+            {
+                _activateSound.SafeStop();
+                _deactivateSound.SafePlayDelayed(0.5f);
+                BabyProofxrAudioManager.Instance.FadeAllToSilence(
+                    duration: 1.0f, 
+                    delay: 0.5f, 
+                    onComplete: () => { _ambientSound.SafeStop(); }
+                );                
+
+            }
+
+        }
+
         private void SetBoundaryEnabled(bool enabled)
         {
             _boundaryEnabled = enabled;
@@ -56,6 +97,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         public void ToggleBabyProofxrEnabled()
         {
             SetBabyProofxrEnabled(!_babyProofxrEnabled);
+            SetEnableGameSounds(_babyProofxrEnabled);
 
             // TODO: add a check to see if the boundary is enabled and if so, disable stuff
             OnBabyProofxrEnabled?.Invoke(_babyProofxrEnabled);
