@@ -19,6 +19,8 @@ namespace PassthroughCameraSamples.MultiObjectDetection
 
         [Header("BabyProofxr Icons")]
         [SerializeField]
+        private GameObject _babyProofxrParent;
+        [SerializeField]
         private Button _babyProofxrButton;
         [SerializeField]
         private GameObject _babyProofxrEnabledIcon;
@@ -90,6 +92,20 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         }
 
         /// <summary>
+        /// Updates the AI Assistant button state.
+        /// </summary>
+        private void UpdateAiAssistantButtonState()
+        {
+            if (AIAssistant.Instance == null)
+            {
+                _aiAssistantButton.interactable = false;
+            }
+
+            bool isRecording = AIAssistant.Instance.IsRecordingUser;
+            SetAiAssistantEnabled(isRecording);
+        }
+
+        /// <summary>
         /// Updates the BabyProofxr button state based on AppManager's running state.
         /// </summary>
         private void UpdateBabyProofxrButtonState()
@@ -105,25 +121,12 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         }
 
         /// <summary>
-        /// Updates the AI Assistant button state.
-        /// </summary>
-        private void UpdateAiAssistantButtonState()
-        {
-            if (AIAssistant.Instance == null)
-            {
-                _aiAssistantButton.interactable = false;
-            }
-
-            bool isRecording = AIAssistant.Instance.IsRecordingUser;
-            SetAiAssistantEnabled(isRecording);
-        }
-
-        /// <summary>
         /// Sets the BabyProofxr enabled state based on app running status.
         /// </summary>
         /// <param name="enabled">Whether the app is running</param>
         private void SetBabyProofxrEnabled(bool enabled)
         {
+            _babyProofxrParent.SetActive(enabled);
             _babyProofxrEnabledIcon.SetActive(!enabled);
             _babyProofxrDisabledIcon.SetActive(enabled);
             _boundaryParent.SetActive(enabled);

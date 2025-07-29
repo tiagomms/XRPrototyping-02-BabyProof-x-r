@@ -12619,6 +12619,7 @@ MonoBehaviour:
   _aiAssistantButton: {fileID: 497015654}
   _aiAssistantEnabledIcon: {fileID: 1715060039}
   _aiAssistantDisabledIcon: {fileID: 497015655}
+  _babyProofxrParent: {fileID: 256214288}
   _babyProofxrButton: {fileID: 1349672851}
   _babyProofxrEnabledIcon: {fileID: 845732222}
   _babyProofxrDisabledIcon: {fileID: 1349672847}
