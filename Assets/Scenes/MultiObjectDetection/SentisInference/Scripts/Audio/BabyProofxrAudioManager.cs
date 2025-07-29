@@ -78,8 +78,8 @@ public class BabyProofxrAudioManager : MonoBehaviour
         }
 
         // Get initial volume levels from the mixer
-        audioMixer.GetFloat(musicGroupName, out _currentMusicVolume);
-        audioMixer.GetFloat(sfxGroupName, out _currentSFXVolume);
+        audioMixer.GetFloat(musicGroupName + parameterVolumeSuffix, out _currentMusicVolume);
+        audioMixer.GetFloat(sfxGroupName + parameterVolumeSuffix, out _currentSFXVolume);
 
         Debug.Log($"BabyProofxrAudioManager initialized - Music: {_currentMusicVolume}dB, SFX: {_currentSFXVolume}dB");
     }
