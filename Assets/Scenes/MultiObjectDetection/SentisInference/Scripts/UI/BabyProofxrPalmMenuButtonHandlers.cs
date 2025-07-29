@@ -1,3 +1,4 @@
+using AI;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -6,6 +7,16 @@ namespace PassthroughCameraSamples.MultiObjectDetection
 {
     public class BabyProofxrPalmMenuButtonHandlers : MonoBehaviour
     {
+        
+        [Header("AI Assistant Icons")]
+        [SerializeField]
+        private Button _aiAssistantButton;
+        [SerializeField]
+        private GameObject _aiAssistantEnabledIcon;
+
+        [SerializeField]
+        private GameObject _aiAssistantDisabledIcon;
+
         [Header("BabyProofxr Icons")]
         [SerializeField]
         private Button _babyProofxrButton;
@@ -14,6 +25,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
 
         [SerializeField]
         private GameObject _babyProofxrDisabledIcon;
+
 
         [Header("Boundary Icons")]
         [SerializeField]
@@ -31,6 +43,8 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         // Start is called once before the first execution of Update after the MonoBehaviour is created
         void Awake()
         {
+            SetAiAssistantEnabled(false);
+
             SetBabyProofxrEnabled(false);
             SetBoundaryEnabled(false);
         }
@@ -47,7 +61,17 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                 Debug.LogWarning("AppManager.Instance is null - BabyProofxr button will be disabled");
             }
 
+            if (AIAssistant.Instance != null)
+            {
+                AIAssistant.Instance.OnRecordingStateChanged += SetAiAssistantEnabled;
+            }
+            else
+            {
+                Debug.LogWarning("AIAssistant.Instance is null - AI Assistant button will be disabled");
+            }
+
             UpdateBabyProofxrButtonState();
+            UpdateAiAssistantButtonState();
         }
 
         private void OnDestroy()
@@ -57,6 +81,12 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             {
                 AppManager.Instance.OnAppStateChanged.RemoveListener(SetBabyProofxrEnabled);
             }
+
+            if (AIAssistant.Instance != null)
+            {
+                AIAssistant.Instance.OnRecordingStateChanged -= SetAiAssistantEnabled;
+            }
+            
         }
 
         /// <summary>
@@ -67,7 +97,6 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             if (AppManager.Instance == null)
             {
                 _babyProofxrButton.interactable = false;
-                DisableBabyProofxrButton();
                 return;
             }
 
@@ -76,14 +105,17 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         }
 
         /// <summary>
-        /// Disables the BabyProofxr button when AppManager is not available.
+        /// Updates the AI Assistant button state.
         /// </summary>
-        private void DisableBabyProofxrButton()
+        private void UpdateAiAssistantButtonState()
         {
-            // Show disabled state
-            _babyProofxrEnabledIcon.SetActive(false);
-            _babyProofxrDisabledIcon.SetActive(true);
-            _boundaryParent.SetActive(false);
+            if (AIAssistant.Instance == null)
+            {
+                _aiAssistantButton.interactable = false;
+            }
+
+            bool isRecording = AIAssistant.Instance.IsRecordingUser;
+            SetAiAssistantEnabled(isRecording);
         }
 
         /// <summary>
@@ -95,6 +127,16 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             _babyProofxrEnabledIcon.SetActive(!enabled);
             _babyProofxrDisabledIcon.SetActive(enabled);
             _boundaryParent.SetActive(enabled);
+        }
+
+        /// <summary>
+        /// Sets the AI Assistant enabled state.
+        /// </summary>
+        /// <param name="enabled">Whether the AI assistant is enabled</param>
+        private void SetAiAssistantEnabled(bool enabled)
+        {
+            _aiAssistantEnabledIcon.SetActive(!enabled);
+            _aiAssistantDisabledIcon.SetActive(enabled);
         }
 
         private void SetBoundaryEnabled(bool enabled)
@@ -120,6 +162,20 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         }
 
         /// <summary>
+        /// Toggle whether or not AI assistant is enabled, and set the icon of the controlling button to display what will happen next time the button is pressed.
+        /// </summary>
+        public void ToggleAiAssistantEnabled()
+        {
+            if (AIAssistant.Instance == null)
+            {
+                Debug.LogWarning("Cannot toggle AI Assistant - AIAssistant.Instance is null");
+                return;
+            }
+
+            AIAssistant.Instance.ToggleRecording();
+        }
+
+        /// <summary>
         /// Toggle whether or not boundary is enabled, and set the icon of the controlling button to display what will happen next time the button is pressed.
         /// </summary>
         public void ToggleBoundaryEnabled()
@@ -127,6 +183,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             SetBoundaryEnabled(!_boundaryEnabled);
 
             OnBoundaryEnabled?.Invoke(_boundaryEnabled);
+
         }
     }
 }

@@ -14,6 +14,9 @@ namespace AI
             OnHold = 2 // when calling the API
         }
 
+        // Singleton instance
+        public static AIAssistant Instance { get; private set; }
+
         [SerializeField] private MicRecorder micRecorder;
         [SerializeField] private WhisperTranscriber speech2TextAI;
         [SerializeField] private BaseAIReasoning aiReasoning;
@@ -23,6 +26,19 @@ namespace AI
         public bool IsRecordingUser { get; protected set; }
 
         public event Action<bool> OnRecordingStateChanged;
+
+        private void Awake()
+        {
+            // Singleton pattern implementation
+            if (Instance != null && Instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
 
         // Start is called once before the first execution of Update after the MonoBehaviour is created
         protected virtual void OnEnable()
