@@ -1,12 +1,14 @@
 using UnityEngine;
 using UnityEngine.Events;
-using Utils;
+using UnityEngine.UI;
 
 namespace PassthroughCameraSamples.MultiObjectDetection
 {
     public class BabyProofxrPalmMenuButtonHandlers : MonoBehaviour
     {
         [Header("BabyProofxr Icons")]
+        [SerializeField]
+        private Button _babyProofxrButton;
         [SerializeField]
         private GameObject _babyProofxrEnabledIcon;
 
@@ -22,21 +24,8 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         [SerializeField]
         private GameObject _boundaryDisabledIcon;
 
-        [Header("Audio")]
-        [SerializeField]
-        private AudioSource? _ambientSound;
-
-        [SerializeField]
-        private AudioSource? _activateSound;
-
-        [SerializeField]
-        private AudioSource? _deactivateSound;
-
-
-        private bool _babyProofxrEnabled;
         private bool _boundaryEnabled;
 
-        public UnityEvent<bool> OnBabyProofxrEnabled;
         public UnityEvent<bool> OnBoundaryEnabled;
 
         // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -46,42 +35,66 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             SetBoundaryEnabled(false);
         }
 
-        private void SetBabyProofxrEnabled(bool enabled)
+        private void Start()
         {
-            _babyProofxrEnabled = enabled;
-            _babyProofxrEnabledIcon.SetActive(!_babyProofxrEnabled);
-            _babyProofxrDisabledIcon.SetActive(_babyProofxrEnabled);
-            _boundaryParent.SetActive(_babyProofxrEnabled);
-        }
-
-        private void SetEnableGameSounds(bool enabled)
-        {
-            if (enabled)
+            // Subscribe to AppManager state changes
+            if (AppManager.Instance != null)
             {
-                BabyProofxrAudioManager.Instance.FadeAllToSilence();
-                BabyProofxrAudioManager.Instance.FadeSFXToFull();
-                
-                _deactivateSound.SafeStop();
-                
-                _ambientSound.SafePlayDelayed(0.5f);
-                // NOTE: if robot voice (0.5f) , if activate sound - immediately
-                _activateSound.SafePlayDelayed(0.5f);
-                //_activateSound.SafePlay();
-
-                BabyProofxrAudioManager.Instance.FadeMusicToFull(duration: 1.0f, delay: 2.0f);
+                AppManager.Instance.OnAppStateChanged.AddListener(SetBabyProofxrEnabled);
             }
             else
             {
-                _activateSound.SafeStop();
-                _deactivateSound.SafePlayDelayed(0.5f);
-                BabyProofxrAudioManager.Instance.FadeAllToSilence(
-                    duration: 1.0f, 
-                    delay: 0.5f, 
-                    onComplete: () => { _ambientSound.SafeStop(); }
-                );                
-
+                Debug.LogWarning("AppManager.Instance is null - BabyProofxr button will be disabled");
             }
 
+            UpdateBabyProofxrButtonState();
+        }
+
+        private void OnDestroy()
+        {
+            // Unsubscribe from AppManager events
+            if (AppManager.Instance != null)
+            {
+                AppManager.Instance.OnAppStateChanged.RemoveListener(SetBabyProofxrEnabled);
+            }
+        }
+
+        /// <summary>
+        /// Updates the BabyProofxr button state based on AppManager's running state.
+        /// </summary>
+        private void UpdateBabyProofxrButtonState()
+        {
+            if (AppManager.Instance == null)
+            {
+                _babyProofxrButton.interactable = false;
+                DisableBabyProofxrButton();
+                return;
+            }
+
+            bool isAppRunning = AppManager.Instance.IsAppRunning;
+            SetBabyProofxrEnabled(isAppRunning);
+        }
+
+        /// <summary>
+        /// Disables the BabyProofxr button when AppManager is not available.
+        /// </summary>
+        private void DisableBabyProofxrButton()
+        {
+            // Show disabled state
+            _babyProofxrEnabledIcon.SetActive(false);
+            _babyProofxrDisabledIcon.SetActive(true);
+            _boundaryParent.SetActive(false);
+        }
+
+        /// <summary>
+        /// Sets the BabyProofxr enabled state based on app running status.
+        /// </summary>
+        /// <param name="enabled">Whether the app is running</param>
+        private void SetBabyProofxrEnabled(bool enabled)
+        {
+            _babyProofxrEnabledIcon.SetActive(!enabled);
+            _babyProofxrDisabledIcon.SetActive(enabled);
+            _boundaryParent.SetActive(enabled);
         }
 
         private void SetBoundaryEnabled(bool enabled)
@@ -96,11 +109,14 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         /// </summary>
         public void ToggleBabyProofxrEnabled()
         {
-            SetBabyProofxrEnabled(!_babyProofxrEnabled);
-            SetEnableGameSounds(_babyProofxrEnabled);
+            if (AppManager.Instance == null)
+            {
+                Debug.LogWarning("Cannot toggle BabyProofxr - AppManager.Instance is null");
+                return;
+            }
 
-            // TODO: add a check to see if the boundary is enabled and if so, disable stuff
-            OnBabyProofxrEnabled?.Invoke(_babyProofxrEnabled);
+            // Toggle app state through AppManager
+            AppManager.Instance.ToggleAppState();
         }
 
         /// <summary>
