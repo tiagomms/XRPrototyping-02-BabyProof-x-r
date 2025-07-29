@@ -1,8 +1,9 @@
 # BabyProofXR - XR Object Detection and Scene Understanding Prototype
 
 ## Quick Links 🔗
-## 🎥 [Watch Demo Video](https://drive.google.com/file/d/1aU9OYlAb_z5OmiX8clfsm6wi6I74qJLe/view?usp=drive_link)
-## 📱 [Download APK](https://drive.google.com/file/d/1CVoA_bwxz7JGS89kzdAMkReVcJxWQTKv/view?usp=drive_link)
+## 🎥 [Watch Demo Video and Download APK](https://drive.google.com/drive/folders/1OLXIlN2O2HMEfddcInAJTlfAvXzgD9T4?usp=sharing)
+
+![BabyProofxr short video walkthrough](./Images/02-BabyProofxr-TiagoMSilva.gif)
 
 ## Overview 🎯
 This project is the second one-week solo prototype developed for the XR Bootcamp XR Prototyping course (May-July 2025). 
@@ -151,6 +152,24 @@ This project utilizes the following third-party assets:
    - [Naughty Attributes (free on Unity's Asset Store)](https://assetstore.unity.com/packages/tools/utilities/naughtyattributes-129996)
    - [Groq-Unity Integration by Lucas Martinic](https://github.com/lucas-martinic/Groq-Unity)
    
+
+## Personal Motivation and Notes
+I wanted to make it an AI enabled “feature”, not an app per se. 
+So I used the Microphone to call our AI assistant and say:
+
+- On: Babyproof Start, Activate, Turn on, enable, launch, begin
+- Off: Stop, turn off, disable, cancel, shutdown, close (do not use deactivate)
+
+I didn’t implement a LLM on this project due to lack of time - right now, it is just a speech to text with keyword matching.
+
+This AI assistant bit was not included in the video because I thought it was not the main feature, just a nice to have (also 20 seconds is very short, and I wanted to end the video with Emilia somehow).
+
+I created a Debug version - where you see all the buttons - it is cheaper for everyone (since you are not using my local Whisper Transcriber at all times).
+
+Feel free to use any version,
+Thank you!
+Tiago & Baby Emilia
+
 
 ## License
 MIT License
