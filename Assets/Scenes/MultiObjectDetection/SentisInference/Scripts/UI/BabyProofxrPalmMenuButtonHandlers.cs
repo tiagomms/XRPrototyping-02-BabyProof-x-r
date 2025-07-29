@@ -7,7 +7,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
 {
     public class BabyProofxrPalmMenuButtonHandlers : MonoBehaviour
     {
-        
+
         [Header("AI Assistant Icons")]
         [SerializeField]
         private Button _aiAssistantButton;
@@ -42,6 +42,10 @@ namespace PassthroughCameraSamples.MultiObjectDetection
 
         public UnityEvent<bool> OnBoundaryEnabled;
 
+        [Header("Debug")]
+        [SerializeField]
+        private bool _showButtonsOnAwake = false;
+
         // Start is called once before the first execution of Update after the MonoBehaviour is created
         void Awake()
         {
@@ -72,6 +76,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                 Debug.LogWarning("AIAssistant.Instance is null - AI Assistant button will be disabled");
             }
 
+            // If we're not showing buttons on awake, update the button states
             UpdateBabyProofxrButtonState();
             UpdateAiAssistantButtonState();
         }
@@ -88,7 +93,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             {
                 AIAssistant.Instance.OnRecordingStateChanged -= SetAiAssistantEnabled;
             }
-            
+
         }
 
         /// <summary>
@@ -126,10 +131,10 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         /// <param name="enabled">Whether the app is running</param>
         private void SetBabyProofxrEnabled(bool enabled)
         {
-            _babyProofxrParent.SetActive(enabled);
+            _babyProofxrParent.SetActive(_showButtonsOnAwake || enabled);
             _babyProofxrEnabledIcon.SetActive(!enabled);
             _babyProofxrDisabledIcon.SetActive(enabled);
-            _boundaryParent.SetActive(enabled);
+            _boundaryParent.SetActive(_showButtonsOnAwake || enabled);
         }
 
         /// <summary>
