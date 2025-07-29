@@ -234,6 +234,8 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         public void OnStart(bool started)
         {
             m_isPaused = !started;
+            // clear ui and prefabs when starting/closing app
+            m_uiInference.Reset();
         }
         #endregion
     }

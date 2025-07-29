@@ -258,7 +258,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         #endregion
 
         #region World-Position Calculations
-        protected Vector3? CalculateWorldPosition(float perX, float perY, Vector2Int camRes, EnvironmentRayCastSampleManager environmentRaycast)
+        public Vector3? CalculateWorldPosition(float perX, float perY, Vector2Int camRes, EnvironmentRayCastSampleManager environmentRaycast)
         {
             // Get the 3D marker world position using Depth Raycast
             var centerPixel = new Vector2Int(Mathf.RoundToInt(perX * camRes.x), Mathf.RoundToInt((1.0f - perY) * camRes.y));
@@ -300,7 +300,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                               rawImageRotation * new Vector3(xOffset, yOffset, 0);
 
 
-            Debug.Log($"[CalculateWorldPosition] UNITY_EDITOR {(worldPos - debugCamera.transform.position)}; perX: {perX}; perY: {perY}; width {imageWidth}; height: {imageHeight}; Offsets x {xOffset}; y {yOffset}");
+            //Debug.Log($"[CalculateWorldPosition] UNITY_EDITOR {(worldPos - debugCamera.transform.position)}; perX: {perX}; perY: {perY}; width {imageWidth}; height: {imageHeight}; Offsets x {xOffset}; y {yOffset}");
             // Create a ray from the camera to this point
             if (debugCamera == null)
             {
@@ -318,6 +318,12 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             }
 
             return worldPos;
+        }
+
+        public void Reset()
+        {
+            m_detectionPrefabManager.CleanUpAllOverlays();
+            ClearAnnotations();
         }
 
         #endregion
