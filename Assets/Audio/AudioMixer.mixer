@@ -1,5 +1,27 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!244 &-7370887596083358032
+AudioMixerEffectController:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_EffectID: 21e22f4c3dcbc8a4ebd2ca62303570cc
+  m_EffectName: Meta XR Audio Reflection
+  m_MixLevel: 9f5ceb4386e3fde41b8a94f029fb6c0a
+  m_Parameters:
+  - m_ParameterName: Refl. Enable
+    m_GUID: 2f77a575f12f9604188a668aaabf91dc
+  - m_ParameterName: Reverb Enable
+    m_GUID: 3ddaadb852e083e4c9489e13890b339e
+  - m_ParameterName: Reverb Level
+    m_GUID: 0f2cc66c0aa3f154e9c11fa0c8ca607e
+  - m_ParameterName: Voice Limit
+    m_GUID: 1bcd1282960a0f149b060c45b47e00b2
+  m_SendTarget: {fileID: 0}
+  m_EnableWetMix: 0
+  m_Bypass: 0
 --- !u!243 &-5687602543933652006
 AudioMixerGroupController:
   m_ObjectHideFlags: 0
