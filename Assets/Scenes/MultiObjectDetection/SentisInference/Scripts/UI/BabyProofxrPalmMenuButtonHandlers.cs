@@ -49,10 +49,10 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         // Start is called once before the first execution of Update after the MonoBehaviour is created
         void Awake()
         {
-            SetAiAssistantEnabled(_showButtonsOnAwake);
+            SetAiAssistantEnabled(false);
 
-            SetBabyProofxrEnabled(_showButtonsOnAwake);
-            SetBoundaryEnabled(_showButtonsOnAwake);
+            SetBabyProofxrEnabled(false);
+            SetBoundaryEnabled(false);
         }
 
         private void Start()
@@ -77,11 +77,8 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             }
 
             // If we're not showing buttons on awake, update the button states
-            if (!_showButtonsOnAwake)
-            {
-                UpdateBabyProofxrButtonState();
-                UpdateAiAssistantButtonState();
-            }
+            UpdateBabyProofxrButtonState();
+            UpdateAiAssistantButtonState();
         }
 
         private void OnDestroy()
@@ -134,10 +131,10 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         /// <param name="enabled">Whether the app is running</param>
         private void SetBabyProofxrEnabled(bool enabled)
         {
-            _babyProofxrParent.SetActive(enabled);
+            _babyProofxrParent.SetActive(_showButtonsOnAwake || enabled);
             _babyProofxrEnabledIcon.SetActive(!enabled);
             _babyProofxrDisabledIcon.SetActive(enabled);
-            _boundaryParent.SetActive(enabled);
+            _boundaryParent.SetActive(_showButtonsOnAwake || enabled);
         }
 
         /// <summary>
