@@ -15,6 +15,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         private readonly Dictionary<int, string> dangerousLabelDict;
         private readonly Dictionary<int, string> ignoreLabelDict;
         private readonly BoundingZoneManager boundingDangerZoneManager;
+        private readonly SentisInferenceUiManager sentisUiInference;
 
         private PassthroughCameraEye cameraEye;
 
@@ -32,7 +33,8 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             BoundingZoneManager boundingDangerZoneManager,
             PassthroughCameraEye cameraEye,
             TestImageManager testImageManager,
-            Camera debugCamera
+            Camera debugCamera,
+            SentisInferenceUiManager sentisUiInference
         )
         {
             this.chockingHazardMaxSize = chockingHazardMaxSize;
@@ -42,6 +44,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             this.testImageManager = testImageManager;
             this.debugCamera = debugCamera;
             this.cameraEye = cameraEye;
+            this.sentisUiInference = sentisUiInference;
             XRDebugLogViewer.Log($"[{nameof(BabyProofxrFilter)}] - Constructor: Invoking IsDangerZoneFilterOn with value {IgnoreDangerZoneFilter}. Subscriber count: {IsDangerZoneFilterOn?.GetInvocationList().Length ?? 0}");
             IsDangerZoneFilterOn?.Invoke(IgnoreDangerZoneFilter);
         }
@@ -106,7 +109,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
 
                 var centerPerX = (centerX + halfWidth) / displayWidth;
                 var centerPerY = (centerY + halfHeight) / displayHeight;
-                Vector3? centerWorldPos = CalculateWorldPosition(centerPerX, centerPerY, camRes, environmentRaycast);
+                Vector3? centerWorldPos = sentisUiInference.CalculateWorldPosition(centerPerX, centerPerY, camRes, environmentRaycast);
 
                 if (centerWorldPos == null) continue;
 
@@ -179,7 +182,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                 Vector2 v2 = vector2s[i];
                 float perX = (centerX + displayWidth / 2 + v2.x) / displayWidth;
                 float perY = (centerY + displayHeight / 2 + v2.y) / displayHeight;
-                Vector3? worldPos = CalculateWorldPosition(perX, perY, camRes, environmentRaycast);
+                Vector3? worldPos = sentisUiInference.CalculateWorldPosition(perX, perY, camRes, environmentRaycast);
 
                 surroundBoxWorldDistance[i] = worldPos != null ?
                     Vector3.Distance(centerWorldPos, (Vector3)worldPos) :
@@ -230,7 +233,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                               rawImageRotation * new Vector3(xOffset, yOffset, 0);
 
 
-            Debug.Log($"[CalculateWorldPosition] UNITY_EDITOR {(worldPosition - debugCamera.transform.position)}; perX: {perX}; perY: {perY}; width {imageWidth}; height: {imageHeight}; Offsets x {xOffset}; y {yOffset}");
+            //Debug.Log($"[CalculateWorldPosition] UNITY_EDITOR {(worldPosition - debugCamera.transform.position)}; perX: {perX}; perY: {perY}; width {imageWidth}; height: {imageHeight}; Offsets x {xOffset}; y {yOffset}");
             // Create a ray from the camera to this point
             if (debugCamera == null)
             {

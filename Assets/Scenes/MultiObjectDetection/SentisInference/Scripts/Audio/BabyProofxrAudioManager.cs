@@ -18,6 +18,9 @@ public class BabyProofxrAudioManager : MonoBehaviour
     [SerializeField] private float defaultTransitionDuration = 1f;
     [SerializeField] private float defaultDelay = 0f;
 
+    [Header("Exposed Parameters Suffix")]
+    [SerializeField] private string parameterVolumeSuffix = "Volume";
+
     // Singleton instance
     private static BabyProofxrAudioManager _instance;
     public static BabyProofxrAudioManager Instance
@@ -75,8 +78,8 @@ public class BabyProofxrAudioManager : MonoBehaviour
         }
 
         // Get initial volume levels from the mixer
-        audioMixer.GetFloat(musicGroupName, out _currentMusicVolume);
-        audioMixer.GetFloat(sfxGroupName, out _currentSFXVolume);
+        audioMixer.GetFloat(musicGroupName + parameterVolumeSuffix, out _currentMusicVolume);
+        audioMixer.GetFloat(sfxGroupName + parameterVolumeSuffix, out _currentSFXVolume);
 
         Debug.Log($"BabyProofxrAudioManager initialized - Music: {_currentMusicVolume}dB, SFX: {_currentSFXVolume}dB");
     }
@@ -106,7 +109,7 @@ public class BabyProofxrAudioManager : MonoBehaviour
             () => _currentMusicVolume,
             (value) => {
                 _currentMusicVolume = value;
-                audioMixer.SetFloat(musicGroupName, value);
+                audioMixer.SetFloat(musicGroupName + parameterVolumeSuffix, value);
             },
             targetVolume,
             duration
@@ -133,7 +136,7 @@ public class BabyProofxrAudioManager : MonoBehaviour
         _musicVolumeTween = null;
 
         _currentMusicVolume = volume;
-        audioMixer.SetFloat(musicGroupName, volume);
+        audioMixer.SetFloat(musicGroupName + parameterVolumeSuffix, volume);
 
         Debug.Log($"Music volume set immediately to {volume}dB");
     }
@@ -187,7 +190,7 @@ public class BabyProofxrAudioManager : MonoBehaviour
             () => _currentSFXVolume,
             (value) => {
                 _currentSFXVolume = value;
-                audioMixer.SetFloat(sfxGroupName, value);
+                audioMixer.SetFloat(sfxGroupName + parameterVolumeSuffix, value);
             },
             targetVolume,
             duration
@@ -214,7 +217,7 @@ public class BabyProofxrAudioManager : MonoBehaviour
         _sfxVolumeTween = null;
 
         _currentSFXVolume = volume;
-        audioMixer.SetFloat(sfxGroupName, volume);
+        audioMixer.SetFloat(sfxGroupName + parameterVolumeSuffix, volume);
 
         Debug.Log($"SFX volume set immediately to {volume}dB");
     }
