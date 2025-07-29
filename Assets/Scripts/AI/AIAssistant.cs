@@ -17,11 +17,16 @@ namespace AI
         // Singleton instance
         public static AIAssistant Instance { get; private set; }
 
+        [Header("Components")]
         [SerializeField] private MicRecorder micRecorder;
         [SerializeField] private WhisperTranscriber speech2TextAI;
         [SerializeField] private BaseAIReasoning aiReasoning;
 
+        [Header("UI")]
+        [SerializeField] private AIAssistantUI aiAssistantUI;
+
         [Space]
+        [Header("Debug")]
         [SerializeField] protected State state;
         public bool IsRecordingUser { get; protected set; }
 
@@ -89,6 +94,7 @@ namespace AI
             IsRecordingUser = true;
 
             OnRecordingStateChanged?.Invoke(true);
+            aiAssistantUI.ListenToUserRequest();
         }
 
         protected virtual void StopRecording()
@@ -116,6 +122,7 @@ namespace AI
                 {
                     StopRecording();
                 }
+                aiAssistantUI.LoadingUserRequest();
 
                 // transcribe user intent from mic recording
                 string newUserIntent = await speech2TextAI.TranscribeAsync(micRecorder.GetLastFilePath());
@@ -145,7 +152,7 @@ namespace AI
                         Debug.Log("AI Assistant: Deactivate");
                         break;
                 }
-
+                aiAssistantUI.CompletedUserRequest(intent);
                 // reset state  
                 state = State.None;
             }
