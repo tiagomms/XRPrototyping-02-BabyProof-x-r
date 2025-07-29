@@ -84,7 +84,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                 Debug.LogWarning($"[{nameof(BabyProofxrInferenceRunManager)} - Play mode testing not possible. Needs a debug camera and TestImageManager]");
             }
 
-            InferenceFilter = new BabyProofxrFilter(chockingHazardMaxSize, dangerousLabelDict, m_ignoreLabelDict, boundingDangerZonesManager, CameraEye, m_testImageManager, m_debugCamera);
+            InferenceFilter = new BabyProofxrFilter(chockingHazardMaxSize, dangerousLabelDict, m_ignoreLabelDict, boundingDangerZonesManager, CameraEye, m_testImageManager, m_debugCamera, m_babyProofxrUiInference);
             toggleFilterAction.action.started += AdjustInferenceFilter;
 
             LoadModel();
