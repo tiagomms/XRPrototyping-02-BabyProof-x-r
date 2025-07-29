@@ -89,9 +89,9 @@ public class AppManager : MonoBehaviour
     /// </summary>
     private void ExecuteStartupSequence()
     {
-        // Fade out any existing sounds and fade in new ones
-        BabyProofxrAudioManager.Instance.FadeAllToSilence();
-        BabyProofxrAudioManager.Instance.FadeSFXToFull();
+        // Set music volume to null, and sfx volume to full
+        BabyProofxrAudioManager.Instance.SetMusicVolumeImmediate(-80f);
+        BabyProofxrAudioManager.Instance.SetSFXVolumeImmediate(0f);
 
         _deactivateSound.SafeStop();
 
