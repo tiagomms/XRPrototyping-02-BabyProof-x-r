@@ -47,8 +47,6 @@ public class AppManager : MonoBehaviour
         if (_isAppRunning) return;
 
         _isAppRunning = true;
-        OnAppStarted?.Invoke();
-        OnAppStateChanged?.Invoke(true);
 
         Debug.Log("App started - executing startup sequence");
         ExecuteStartupSequence();
@@ -96,11 +94,20 @@ public class AppManager : MonoBehaviour
         _deactivateSound.SafeStop();
 
         // Play ambient and activate sounds with delay
-        _ambientSound.SafePlayDelayed(0.5f);
-        _activateSound.SafePlayDelayed(0.5f);
+        _ambientSound.SafePlayDelayed(1f);
+        _activateSound.SafePlayDelayed(1.5f);
 
-        // Fade music to full volume
-        BabyProofxrAudioManager.Instance.FadeMusicToFull(duration: 1.0f, delay: 2.0f);
+        // Fade music to full volume and invoke events when complete
+        BabyProofxrAudioManager.Instance.FadeMusicToFull(
+            duration: 1.0f, 
+            delay: 2.0f,
+            onComplete: () => {
+                // Invoke events after startup sequence completes (total ~2.5 seconds)
+                OnAppStarted?.Invoke();
+                OnAppStateChanged?.Invoke(true);
+                Debug.Log("App startup sequence completed - events invoked");
+            }
+        );
     }
 
     /// <summary>
