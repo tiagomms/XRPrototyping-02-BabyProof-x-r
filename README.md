@@ -14,7 +14,7 @@ Again, in XR with camera access + AI we can start doing this sort of analysis.
 In addition to this, I can tell my partner and my baby that I am working on important stuff. 😎
 
 ## Tech Stack
-- **Unity**: 6000.0.39f1
+- **Unity**: 6000.0.51f1
 - **Meta XR SDK**: 
   - All-in-one SDK v76
   - Camera Access API
@@ -30,6 +30,17 @@ In addition to this, I can tell my partner and my baby that I am working on impo
 - Object filtering based on dangerous labels
 - Scene anchor detection and labeling
 - Camera access does not work on Oculus Link, so I had to create a way of avoiding it and still test Unity Sentis. Built a simulation that runs a set of images that on Unity Sentis and change every x seconds. It was a child of the camera, so I could move the images to the areas where scene understanding considered ok.
+- Palm Hand UI for easier management
+- Optional Use of Speech-to-text to start/stop experience (Activate / Stop)
+
+## Project Setup 
+You need a [create an account in Groq](https://console.groq.com/home) and create a API Key to have this experience working. After that:
+
+1. Create an APIKeyConfig asset: Right-click in Project window → Create → Config → API Key Config. Move file ideally to the Secrets folder so that is not published on github
+2. Add your API keys to the config asset 
+3. Assign the config asset to the APIKeyLoader component in the scene inspector
+
+**Note:** You may still test the experience without the AI part, by never using the Microphone button (that triggers the AI). You can create a APIKeyConfig with a fake API Key, and it will work as the Object Detection runs locally.
 
 ## Project Structure
 Assets/
@@ -132,6 +143,13 @@ This project utilizes the following third-party assets:
 
 - Icons
    - [Baby safety icons created by Iconjam - Flaticon](https://www.flaticon.com/free-icons/baby-safety)
+
+- Sounds
+   - [FreeSound.org's user IronCross32 audio samples for activating/deactiving things](https://freesound.org/people/ironcross32/)
+
+- Packages
+   - [Naughty Attributes (free on Unity's Asset Store)](https://assetstore.unity.com/packages/tools/utilities/naughtyattributes-129996)
+   - [Groq-Unity Integration by Lucas Martinic](https://github.com/lucas-martinic/Groq-Unity)
    
 
 ## License
