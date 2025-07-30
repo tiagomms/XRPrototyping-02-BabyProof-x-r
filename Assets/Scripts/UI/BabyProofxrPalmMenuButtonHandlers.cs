@@ -42,10 +42,6 @@ namespace PassthroughCameraSamples.MultiObjectDetection
 
         public UnityEvent<bool> OnBoundaryEnabled;
 
-        [Header("Debug")]
-        [SerializeField]
-        private bool _showButtonsOnAwake = false;
-
         // Start is called once before the first execution of Update after the MonoBehaviour is created
         void Awake()
         {
@@ -57,15 +53,16 @@ namespace PassthroughCameraSamples.MultiObjectDetection
 
         private void Start()
         {
+            // Validate AppManager is properly initialized
+            if (!AppManager.IsValid())
+            {
+                Debug.LogError($"[{nameof(BabyProofxrPalmMenuButtonHandlers)}] CRITICAL ERROR: AppManager is not properly initialized! Palm menu cannot function without AppManager.");
+                enabled = false;
+                return;
+            }
+
             // Subscribe to AppManager state changes
-            if (AppManager.Instance != null)
-            {
-                AppManager.Instance.OnAppStateChanged.AddListener(SetBabyProofxrEnabled);
-            }
-            else
-            {
-                Debug.LogWarning("AppManager.Instance is null - BabyProofxr button will be disabled");
-            }
+            AppManager.Instance.OnAppStateChanged.AddListener(SetBabyProofxrEnabled);
 
             if (AIAssistant.Instance != null)
             {
@@ -115,12 +112,6 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         /// </summary>
         private void UpdateBabyProofxrButtonState()
         {
-            if (AppManager.Instance == null)
-            {
-                _babyProofxrButton.interactable = false;
-                return;
-            }
-
             bool isAppRunning = AppManager.Instance.IsAppRunning;
             SetBabyProofxrEnabled(isAppRunning);
         }
@@ -131,10 +122,11 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         /// <param name="enabled">Whether the app is running</param>
         private void SetBabyProofxrEnabled(bool enabled)
         {
-            _babyProofxrParent.SetActive(_showButtonsOnAwake || enabled);
+            // always show in debug mode
+            _babyProofxrParent.SetActive(AppManager.Instance.Config.environment == AppManagerConfig.Environment.Debug || enabled);
             _babyProofxrEnabledIcon.SetActive(!enabled);
             _babyProofxrDisabledIcon.SetActive(enabled);
-            _boundaryParent.SetActive(_showButtonsOnAwake || enabled);
+            _boundaryParent.SetActive(AppManager.Instance.Config.environment == AppManagerConfig.Environment.Debug || enabled);
         }
 
         /// <summary>
@@ -159,12 +151,6 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         /// </summary>
         public void ToggleBabyProofxrEnabled()
         {
-            if (AppManager.Instance == null)
-            {
-                Debug.LogWarning("Cannot toggle BabyProofxr - AppManager.Instance is null");
-                return;
-            }
-
             // Toggle app state through AppManager
             AppManager.Instance.ToggleAppState();
         }

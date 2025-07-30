@@ -35,13 +35,21 @@ In addition to this, I can tell my partner and my baby that I am working on impo
 - Optional Use of Speech-to-text to start/stop experience (Activate / Stop)
 
 ## Project Setup 
-You need a [create an account in Groq](https://console.groq.com/home) and create a API Key to have this experience working. After that:
+
+### Basic Setup
+1. Create an AppManagerConfig asset: Right-click in Project window → Create → Config → App Manager Config
+2. Assign the AppManagerConfig asset to the AppManager component in the Babyproofxr scene
+3. **Recommended**: Set the environment to "Debug" mode so that all UI buttons are accessible for testing
+
+### AI Setup (Optional)
+If you plan to enable AI features, you need to [create an account in Groq](https://console.groq.com/home) and create an API Key. After that:
 
 1. Create an APIKeyConfig asset: Right-click in Project window → Create → Config → API Key Config. Move file ideally to the Secrets folder so that is not published on github
 2. Add your API keys to the config asset 
 3. Assign the config asset to the APIKeyLoader component in the scene inspector
+4. Set the aiState to "Enabled" in the AppManagerConfig
 
-**Note:** You may still test the experience without the AI part, by never using the Microphone button (that triggers the AI). You can create a APIKeyConfig with a fake API Key, and it will work as the Object Detection runs locally.
+**Note:** You may still test the experience without the AI part by setting aiState to "Disabled" in the AppManagerConfig. You can create an APIKeyConfig with a fake API Key, and the overall core of the app will still work as the Object Detection runs locally.
 
 ## Project Structure
 Assets/
