@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using NaughtyAttributes;
 using UnityEngine;
 using UnityEngine.Events;
@@ -48,6 +49,14 @@ namespace AI
         // Start is called once before the first execution of Update after the MonoBehaviour is created
         protected virtual void OnEnable()
         {
+            // Validate AppManager is properly initialized
+            if (!AppManager.IsValid())
+            {
+                Debug.LogError("[AIAssistant] CRITICAL ERROR: AppManager is not properly initialized! AIAssistant cannot function without AppManager.");
+                enabled = false;
+                return;
+            }
+
             if (MicRecorderManager.Instance != null)
             {
                 MicRecorderManager.Instance.RegisterRecorder(micRecorder);
@@ -101,8 +110,12 @@ namespace AI
         {
             // this triggers the onRecordedAudio once it is saved and we can proceed with everything
             // from UserRecordedIntent
-            micRecorder.StopAndSave();
-            // NOTE: default is safe - it stores the mic recording in temp folder
+
+            // NOTE: check AppManager to see if AI is enabled (if not discard the recording)
+            bool isAIEnabled = AppManager.Instance.Config.aiState == AppManagerConfig.AIState.Enabled;
+            FileEnumPath saveClipPath = isAIEnabled ? FileEnumPath.Temporary : FileEnumPath.None;
+            micRecorder.StopAndSave(isAIEnabled, saveClipPath);
+
             // TODO: to delete these mic calls every time or on app close 
             IsRecordingUser = false;
 
@@ -124,11 +137,24 @@ namespace AI
                 }
                 aiAssistantUI.LoadingUserRequest();
 
-                // transcribe user intent from mic recording
-                string newUserIntent = await speech2TextAI.TranscribeAsync(micRecorder.GetLastFilePath());
+                VoiceIntent intent;
+                bool isAIEnabled = AppManager.Instance.Config.aiState == AppManagerConfig.AIState.Enabled;
+                if (isAIEnabled)
+                {
+                    // AI is enabled: transcribe speech to text, then parse intent
+                    
+                    // transcribe user intent from mic recording
+                    string newUserIntent = await speech2TextAI.TranscribeAsync(micRecorder.GetLastFilePath());
 
-                // AI Reasoning returns intent
-                VoiceIntent intent = await aiReasoning.ParseIntent(newUserIntent);
+                    // AI Reasoning returns intent
+                    intent = await aiReasoning.ParseIntent(newUserIntent);
+                }
+                else
+                {
+                    // fake it - returned intent is the opposite of the current state
+                    await Task.Delay(2000);
+                    intent = AppManager.Instance.IsAppRunning ? VoiceIntent.Deactivate : VoiceIntent.Activate;
+                }
 
                 // AI Assistant handles intent
                 switch (intent)

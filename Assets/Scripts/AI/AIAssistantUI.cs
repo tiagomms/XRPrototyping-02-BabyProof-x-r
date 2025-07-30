@@ -43,6 +43,10 @@ namespace AI
         [SerializeField] private Sprite appIconSprite;
         [SerializeField] private Sprite appErrorSprite;
 
+        [Header("UI - AI Disabled Section")]
+        [SerializeField] private GameObject aiDisabledSection;
+        
+
         [Space]
         [Header("Animation Settings")]
         [SerializeField, Range(0.1f, 1f)] 
@@ -84,6 +88,14 @@ namespace AI
         private void Start()
         {
             uiRoot.SetActive(false);
+            
+            // Validate AppManager is properly initialized
+            if (!AppManager.IsValid())
+            {
+                Debug.LogError("[AIAssistantUI] CRITICAL ERROR: AppManager is not properly initialized! AIAssistantUI cannot function without AppManager.");
+                enabled = false;
+                return;
+            }
         }
 
         /// <summary>
@@ -107,6 +119,9 @@ namespace AI
             uiRoot.SetActive(true);
             appSection.SetActive(false);
             processingSection.SetActive(false);
+            
+            // only show if AI is disabled
+            aiDisabledSection.SetActive(AppManager.Instance.Config.aiState == AppManagerConfig.AIState.Disabled);
             
             uiRoot.transform.localScale = Vector3.zero;
             // Scale up to original size - this animation should complete

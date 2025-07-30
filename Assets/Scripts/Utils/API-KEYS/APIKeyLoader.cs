@@ -43,7 +43,7 @@ public class APIKeyLoader : MonoBehaviour
             Debug.LogError("APIKeyConfig is not assigned in the inspector! Please follow these steps:");
             Debug.LogError("1. Create an APIKeyConfig asset: Right-click in Project window → Create → Config → API Key Config. Ideally in the Secrets folder so that is not published on github");
             Debug.LogError("2. Add your API keys to the config asset");
-            Debug.LogError("3. Assign the config asset to the APIKeyLoader component in the inspector");
+            Debug.LogError("3. Assign the config asset to the APIKeyLoader component in the scene inspector");
             return;
         }
 

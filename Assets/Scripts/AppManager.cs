@@ -10,6 +10,11 @@ public class AppManager : MonoBehaviour
 {
     public static AppManager Instance { get; private set; }
 
+    [Header("Config")]
+    [SerializeField] private AppManagerConfig _config;
+    public AppManagerConfig Config => _config;
+    
+
     [Header("Audio Sources")]
     [SerializeField] private AudioSource _ambientSound;
     [SerializeField] private AudioSource _activateSound;
@@ -37,6 +42,47 @@ public class AppManager : MonoBehaviour
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
+        
+        // Validate critical dependencies
+        ValidateCriticalDependencies();
+    }
+
+    /// <summary>
+    /// Validates that all critical dependencies are properly assigned.
+    /// </summary>
+    private void ValidateCriticalDependencies()
+    {
+        if (_config == null)
+        {
+            Debug.LogError("[AppManager] CRITICAL ERROR: AppManagerConfig is not assigned! AppManager is required for the application to function properly.");
+            #if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPaused = true;
+            #endif
+            return;
+        }
+
+        Debug.Log("[AppManager] AppManager initialized successfully with config.");
+    }
+
+    /// <summary>
+    /// Static method to validate if AppManager is properly initialized and accessible.
+    /// </summary>
+    /// <returns>True if AppManager is properly initialized, false otherwise.</returns>
+    public static bool IsValid()
+    {
+        if (Instance == null)
+        {
+            Debug.LogError("[AppManager] CRITICAL ERROR: AppManager.Instance is null! AppManager must exist in the scene for the application to function.");
+            return false;
+        }
+
+        if (Instance.Config == null)
+        {
+            Debug.LogError("[AppManager] CRITICAL ERROR: AppManager.Config is null! AppManagerConfig must be assigned.");
+            return false;
+        }
+
+        return true;
     }
 
     /// <summary>
